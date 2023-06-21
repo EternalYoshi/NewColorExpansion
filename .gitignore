@@ -1,0 +1,12 @@
+
+*.db
+.vs/NewColorExpansion/v15/.suo
+.vs/NewColorExpansion/v15/Browse.VC.opendb
+.vs/NewColorExpansion/v15/ipch/43fdc07b3598c80d.ipch
+.vs/NewColorExpansion/v15/ipch/AutoPCH/27deb34e313c644c/DLLMAIN.ipch
+.vs/NewColorExpansion/v15/ipch/AutoPCH/522211650bb161b8/INIREADER.ipch
+.vs/NewColorExpansion/v15/ipch/AutoPCH/5246fcda5f3bdcd9/SIGSCAN.ipch
+.vs/NewColorExpansion/v15/ipch/ca8ff2a020ae1198.ipch
+.vs/NewColorExpansion/v15/ipch/da6edb0abee0d8ad.ipch
+.vs/NewColorExpansion/v15/Solution.VC.db-shm
+.vs/NewColorExpansion/v15/Solution.VC.db-wal

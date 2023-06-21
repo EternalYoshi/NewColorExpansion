@@ -1,0 +1,8 @@
+﻿C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\IDE\VC\VCTargets\Microsoft.CppBuild.targets(377,5): warning MSB8004: Output Directory does not end with a trailing slash.  This build instance will add the slash as it is required to allow proper evaluation of the Output Directory.
+  sigscan.cpp
+c:\users\eternal yoshi\source\repos\3testr\3testr\sigscan.cpp(87): fatal error C1010: unexpected end of file while looking for precompiled header. Did you forget to add '#include "pch.h"' to your source?
+  dllmain.cpp
+c:\users\eternal yoshi\source\repos\newcolorexpansion\newcolorexpansion\trampoline.h(149): error C7525: inline variables require at least '/std:c++17'
+c:\users\eternal yoshi\source\repos\newcolorexpansion\newcolorexpansion\trampoline.h(149): error C2864: 'Trampoline::ms_first': a static data member with an in-class initializer must have non-volatile const integral type or be specified as 'inline'
+  c:\users\eternal yoshi\source\repos\newcolorexpansion\newcolorexpansion\trampoline.h(149): note: type is 'Trampoline *'
+  Generating Code...

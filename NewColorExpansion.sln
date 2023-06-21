@@ -1,0 +1,48 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28307.1972
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "NewColorExpansion", "NewColorExpansion\NewColorExpansion.vcxproj", "{7D5EC108-0068-4805-89AB-053F02D4C0E2}"
+EndProject
+Project("{911E67C6-3D85-4FCE-B560-20A9C3E3FF48}") = "umvc3", "E:\ULTIMATE MARVEL VS. CAPCOM 3\umvc3.exe", "{7DAD9C9C-4B23-4BEE-A68C-FD77986A03EB}"
+	ProjectSection(DebuggerProjectSystem) = preProject
+		PortSupplier = 00000000-0000-0000-0000-000000000000
+		Executable = E:\ULTIMATE MARVEL VS. CAPCOM 3\umvc3.exe
+		RemoteMachine = DESKTOP-5NCEGC8
+		StartingDirectory = E:\ULTIMATE MARVEL VS. CAPCOM 3
+		Environment = Default
+		LaunchingEngine = 00000000-0000-0000-0000-000000000000
+		UseLegacyDebugEngines = No
+		LaunchSQLEngine = No
+		AttachLaunchAction = No
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x64 = Debug|x64
+		Debug|x86 = Debug|x86
+		Release|x64 = Release|x64
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{7D5EC108-0068-4805-89AB-053F02D4C0E2}.Debug|x64.ActiveCfg = Debug|x64
+		{7D5EC108-0068-4805-89AB-053F02D4C0E2}.Debug|x64.Build.0 = Debug|x64
+		{7D5EC108-0068-4805-89AB-053F02D4C0E2}.Debug|x86.ActiveCfg = Debug|Win32
+		{7D5EC108-0068-4805-89AB-053F02D4C0E2}.Debug|x86.Build.0 = Debug|Win32
+		{7D5EC108-0068-4805-89AB-053F02D4C0E2}.Release|x64.ActiveCfg = Release|x64
+		{7D5EC108-0068-4805-89AB-053F02D4C0E2}.Release|x64.Build.0 = Release|x64
+		{7D5EC108-0068-4805-89AB-053F02D4C0E2}.Release|x86.ActiveCfg = Release|Win32
+		{7D5EC108-0068-4805-89AB-053F02D4C0E2}.Release|x86.Build.0 = Release|Win32
+		{7DAD9C9C-4B23-4BEE-A68C-FD77986A03EB}.Debug|x64.ActiveCfg = Release|x64
+		{7DAD9C9C-4B23-4BEE-A68C-FD77986A03EB}.Debug|x86.ActiveCfg = Release|x64
+		{7DAD9C9C-4B23-4BEE-A68C-FD77986A03EB}.Release|x64.ActiveCfg = Release|x64
+		{7DAD9C9C-4B23-4BEE-A68C-FD77986A03EB}.Release|x86.ActiveCfg = Release|x64
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {5BEDD005-B248-4AE0-85B1-89D7B8F212B4}
+	EndGlobalSection
+EndGlobal
