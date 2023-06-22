@@ -311,44 +311,28 @@ void OnInitializeHook()
 
 	}
 
-
-
-	/*
-
-	//These last 8 are for the child characters. They gotta be updated along with the host characters.
-	SingleProtectedWriteByte(0x140A6FAC0, 1, ToggleColorCount, oldPageProtection);
-	SingleProtectedWriteByte(0x140A6FAC4, 1, ToggleColorCount, oldPageProtection);
-	SingleProtectedWriteByte(0x140A6FAC8, 1, ToggleColorCount, oldPageProtection);
-	SingleProtectedWriteByte(0x140A6FACC, 1, ToggleColorCount, oldPageProtection);
-
-	SingleProtectedWriteByte(0x140A6FAD0, 1, ToggleColorCount, oldPageProtection);
-	SingleProtectedWriteByte(0x140A6FAD4, 1, ToggleColorCount, oldPageProtection);
-	SingleProtectedWriteByte(0x140A6FAD8, 1, ToggleColorCount, oldPageProtection);
-	SingleProtectedWriteByte(0x140A6FADC, 1, ToggleColorCount, oldPageProtection);
-
-	*/
-
-
 	//This is for text on character select. Ensures the text range is in sync.
 	SingleProtectedWriteByte(0x1403704E8, 1, CHSValueBorder, oldPageProtection);
 	MultiProtectedWriteShort(0x140420300, 4, MSDValue, oldPageProtection);
 	MultiProtectedWriteShort(0x1404219FF, 4, MSDValue, oldPageProtection);
 	MultiProtectedWriteShort(0x140421CB2, 4, MSDValue, oldPageProtection);
 	MultiProtectedWriteShort(0x1404222E6, 4, MSDValue, oldPageProtection);
-	SingleProtectedWriteByte(0x140C510FF, 1, 0x0, oldPageProtection);
+	//SingleProtectedWriteByte(0x140C510FF, 1, 0x0, oldPageProtection);
 
 	//This is so Arcade Mode uses the Character Select Portraits for the Next Stage preview.
-	BYTE CHSPortraitRef[] = { 0xA4, 0xAF, 0x65 };
-	MultiProtectedWriteByteArray(0x14041471A, 3, CHSPortraitRef, oldPageProtection);
-	SingleProtectedWriteByte(0x14041473D, 1, 0x00, oldPageProtection);
-	SingleProtectedWriteByte(0x140414742, 1, 0x01, oldPageProtection);
-	SingleProtectedWriteByte(0x1402BDF3A, 1, 0xEB, oldPageProtection);
-	SingleProtectedWriteByte(0x140414610, 1, 0x01, oldPageProtection);
-	SingleProtectedWriteByte(0x14041460B, 1, 0x00, oldPageProtection);
+	BYTE CHSPortraitRef[] = { 0xA4, 0xAF, 0x65 };	
+	BYTE ForSomeFunctionB[] = { 0xB2, 0xB0,0x65 };
+
+	//MultiProtectedWriteByteArray(0x14041471A, 3, CHSPortraitRef, oldPageProtection);
+	//SingleProtectedWriteByte(0x14041473D, 1, 0x00, oldPageProtection);
+	//SingleProtectedWriteByte(0x140414742, 1, 0x01, oldPageProtection);
+	//SingleProtectedWriteByte(0x1402BDF3A, 1, 0xEB, oldPageProtection);
+	//SingleProtectedWriteByte(0x140414610, 1, 0x01, oldPageProtection);
+	//SingleProtectedWriteByte(0x14041460B, 1, 0x00, oldPageProtection);
+	//MultiProtectedWriteByteArray(0x1404145E2, 3, ForSomeFunctionB, oldPageProtection);
 
 	//This is for the rest of the Color Expansion Code to defeat checks for color borders.
 	BYTE ForSomeFunction[] = { 0x83, 0xC8 };
-	BYTE ForSomeFunctionB[] = { 0xB2, 0xB0,0x65 };
 
 	//I think this ensures the text doesn't go to H or DL in text scroll.
 	BYTE ForSomeFunctionC[] = { 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, };
@@ -358,9 +342,8 @@ void OnInitializeHook()
 	BYTE ForSomeFunctionD[] = { 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90 };
 
 	MultiProtectedWriteByteArray(0x1402BC1AD, 2, ForSomeFunction, oldPageProtection);
-	MultiProtectedWriteByteArray(0x1404145E2, 3, ForSomeFunctionB, oldPageProtection);
 	MultiProtectedWriteByteArray(0x140421CB6, 14, ForSomeFunctionC, oldPageProtection);
-	//MultiProtectedWriteByteArray(0x140365770, 8, ForSomeFunctionD, oldPageProtection);
+	
 	
 	//This makes the jnz into an unconditional jump.
 	SingleProtectedWriteByte(0x1402BCA88, 1, 0xEB, oldPageProtection);
