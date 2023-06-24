@@ -151,7 +151,7 @@ void OnInitializeHook()
 	SingleProtectedWriteByte(0x14036DAB0, 1, 0xFF, oldPageProtection);
 	SingleProtectedWriteByte(0x1403704DC, 1, ToggleColorCount, oldPageProtection);
 	SingleProtectedWriteByte(0x1403741D9, 1, 0xFF, oldPageProtection);
-	SingleProtectedWriteByte(0x14041AA18, 1, ToggleColorCount, oldPageProtection);
+	//SingleProtectedWriteByte(0x14041AA18, 1, ToggleColorCount, oldPageProtection);
 
 	if (UseIndividualColors == 0)
 	{
@@ -320,8 +320,8 @@ void OnInitializeHook()
 	//SingleProtectedWriteByte(0x140C510FF, 1, 0x0, oldPageProtection);
 
 	//This is so Arcade Mode uses the Character Select Portraits for the Next Stage preview.
-	BYTE CHSPortraitRef[] = { 0xA4, 0xAF, 0x65 };
-	BYTE ForSomeFunctionB[] = { 0xB2, 0xB0,0x65 };
+	//BYTE CHSPortraitRef[] = { 0xA4, 0xAF, 0x65 };
+	//BYTE ForSomeFunctionB[] = { 0xB2, 0xB0,0x65 };
 
 	//MultiProtectedWriteByteArray(0x14041471A, 3, CHSPortraitRef, oldPageProtection);
 	//SingleProtectedWriteByte(0x14041473D, 1, 0x00, oldPageProtection);
