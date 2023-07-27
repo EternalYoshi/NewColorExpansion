@@ -35,7 +35,7 @@ bool CheckGame()
 	}
 	else
 	{
-		MessageBoxA(0, "Sorry!\nColor Expansion only supports the most recent Steam Executable of Ultimate Marvel vs Capcom 3.", 0, MB_ICONINFORMATION);
+		MessageBoxA(0, "Sorry!\nColor Expansion only supports the most recent(or the version released from April 2017 onward) Steam Executable of Ultimate Marvel vs Capcom 3.", 0, MB_ICONINFORMATION);
 		return false;
 	}
 }
@@ -115,6 +115,11 @@ void OnInitializeHook()
 {
 
 	//For Testing purposes.
+	if(ToggleColorCount < 0 || ToggleColorCount == NULL)
+	{
+		MessageBoxA(0, "The entered value for the Color count is bogus, so it shall be set to 20 in game.\nPlease check the .ini file.", 0, MB_ICONINFORMATION);
+		ToggleColorCount = 20;
+	}
 	//ToggleColorCount = 17;
 
 	//Other Important Values.
