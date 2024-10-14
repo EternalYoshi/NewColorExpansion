@@ -111,6 +111,125 @@ DWORD MultiProtectedWriteByteArray(DWORD64 AddressToWrite, int length, BYTE Byte
 	return 0;
 }
 
+//How do I fix this.......?
+/*
+__declspec(naked) void sub_14024DB40(DWORD64 a1)
+{
+	__asm
+	{
+
+		mov[rsp + 0x08], rbx
+		mov[rsp + 0x10], rbp
+		mov[rsp + 0x18], rsi
+		push rdi
+		push r12
+		push r13
+		push r14
+		push r15
+		sub rsp, 0x40	//64
+		mov rsi, rcx
+		call 0x14024D950 //umvc3.exe+24D950 or call 0xfffffffffffffdf1
+		mov[rsi + 38], 00000000
+		mov r15d, 0x234 //564
+		lea rbx, [rsi] + 0x3C
+		lea r12, [rsi] + 0x90
+		mov r13d, 7
+		mov rcx, rsi
+		call 0x14024D140 //umvc3.exe+24D140 or 0xfffffffffffff5bb
+		xor ebp, ebp
+		mov[r12], eax
+		lea r14d, [rbp + 03]
+		mov rcx, rsi
+		call 0x14024D070 //umvc3.exe+24D070
+		mov[rbx], eax
+		cmp eax, 0x33 //51
+		je 0x14024DBCF
+		call 0x1400046D0
+		mov rcx, rax
+		call 0x14000AF80
+		mov edi, eax
+		mov eax, 0x66666667 //mov eax, 0xAAAAAAAB
+		mul edi
+		shr edx, 3 //shr edx, 02
+		lea ecx, [rdx + rdx * 4] //lea ecx, [rdx + rdx * 2]
+		sal ecx, 2 //add ecx, ecx
+		sub edi, ecx
+		call 0x140004700
+		lea rcx, [r15 + rbp]
+		mov[rax + rcx * 4], edi
+		mov edx, [rbx]
+		mov rcx, rsi
+		call 0x14024B4D0
+		inc rbp
+		add rbx, 04
+		dec r14
+		jne 0x14024DB94
+		add r12, 04
+		add r15, 03
+		dec r13
+		jne 0x14024DB82
+		mov[rsp + 0x20], 0x000003
+		mov[rsp + 0x24], 0x000023
+		mov[rsp + 0x28], 0x000005
+		mov[rsp + 0x2C], 0x000027
+		mov[rsp + 0x30], 0x000023
+		mov[rsp + 0x34], 0x000005
+		mov[rsp + 0x38], 0x000027
+		mov[rsp + 0x3C], 0x000003
+		call 0x140004700
+		mov rcx, rax
+		call 0x1400FAC50
+		cmp eax, 03
+		jna 0x14024DC54
+		call 0x1400046D0
+		mov rcx, rax
+		call 0x14000AF80
+		and eax, 03
+		cdqe
+		mov[rsi + 0x84], 0x33
+		lea rcx, [rax * 8 + 00000000]
+		mov eax, [rsp + rcx + 0x20]
+		mov[rsi + 0x88], eax
+		mov eax, [rsp + rcx + 0x24]
+		mov[rsi + 0x8C], eax
+		call 0x140004700
+		mov[rax + 0x918], 00000000
+		call 0x140004700
+		mov[rax + 0x91C], 00000006
+		call 0x140004700
+		mov[rax + 0x920], 00000006
+		call 0x140001AC0
+		mov edx, 0x012
+		mov rcx, rax
+		call 0x1402BC5D0
+		mov[rsi + 0x0A8], eax
+		movsxd  rbx, dword ptr[rsi + 0x38]
+		call 0x140004700
+		mov edx, [rsi + rbx * 4 + 0x00000090]
+		mov rcx, rax
+		call 0x1401CF670
+		call 0x140001AC0
+		test rax, rax
+		je 0x14024DCF6
+		movsxd  rcx, dword ptr[rsi + 0x38]
+		mov edx, [rsi + rcx * 4 + 0x90]
+		mov rcx, rax
+		call 0x14024E140
+		mov rbx, [rsp + 0x70]
+		mov rbp, [rsp + 0x78]
+		mov rsi, [rsp + 0x80]
+		add rsp, 0x40
+		pop r15
+		pop r14
+		pop r13
+		pop r12
+		pop rdi
+		ret
+
+	}
+}
+*/
+
 void OnInitializeHook()
 {
 
@@ -156,7 +275,7 @@ void OnInitializeHook()
 	SingleProtectedWriteByte(0x14036DAB0, 1, 0xFF, oldPageProtection);
 	SingleProtectedWriteByte(0x1403704DC, 1, ToggleColorCount, oldPageProtection);
 	SingleProtectedWriteByte(0x1403741D9, 1, 0xFF, oldPageProtection);
-	//SingleProtectedWriteByte(0x14041AA18, 1, ToggleColorCount, oldPageProtection);
+	SingleProtectedWriteByte(0x14041AA18, 1, ToggleColorCount, oldPageProtection);
 
 	if (UseIndividualColors == 0)
 	{
@@ -322,7 +441,18 @@ void OnInitializeHook()
 	MultiProtectedWriteShort(0x1404219FF, 4, MSDValue, oldPageProtection);
 	MultiProtectedWriteShort(0x140421CB2, 4, MSDValue, oldPageProtection);
 	MultiProtectedWriteShort(0x1404222E6, 4, MSDValue, oldPageProtection);
-	//SingleProtectedWriteByte(0x140C510FF, 1, 0x0, oldPageProtection);
+
+	//For Testing Purposes.
+	//Licensing Board Portraits?
+	SingleProtectedWriteByte(0x140C510FF, 1, 0x0, oldPageProtection);
+
+	//Arcade Mode Random selector test.
+	BYTE ACRandomA[] = { 0xB8, 0x39, 0x8E, 0xE3, 0x38 };
+	BYTE ByteShift = 0x02;
+	MultiProtectedWriteByteArray(0x14024DBB2, 5, ACRandomA, oldPageProtection);
+	SingleProtectedWriteByte(0x14024DBBB, 1, ByteShift, oldPageProtection);
+	BYTE ACRandomB[] = { 0x8D, 0x0C, 0xD2};
+	MultiProtectedWriteByteArray(0x14024DBBC, 3, ACRandomB, oldPageProtection);
 
 	//This is so Arcade Mode uses the Character Select Portraits for the Next Stage preview.
 	//BYTE CHSPortraitRef[] = { 0xA4, 0xAF, 0x65 };
@@ -398,6 +528,15 @@ void OnInitializeHook()
 
 	//Portugal language's path offset is separate from the rest. I don't know why.
 	MultiProtectedWriteByteArray(0x140B21D50, 11, NewPathA, oldPageProtection);
+
+	//For Random. Rewrites it so it selects the range of colors from default to color 19(20 externally).
+	BYTE ForCHSRandom[] =
+	{
+		0xFF, 0x15, 0x02, 0x00, 0x00, 0x00, 0xEB, 0x08, 0x60, 0x0A, 0xA5, 0x0A, 0xFC, 0x7F, 0x00, 0x00,
+		0x31, 0xD2, 0xB9, 0x14, 0x00, 0x00, 0x00, 0xF7, 0xF1, 0x8B, 0xC2, 0xC3, 0x90, 0x90, 0x90, 0x90
+	};
+
+	MultiProtectedWriteByteArray(0x1402BC410, 32, ForCHSRandom, oldPageProtection);
 
 
 }
