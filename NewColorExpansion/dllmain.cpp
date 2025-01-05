@@ -38,6 +38,7 @@ typedef void(*method)(void);
 short ToggleColorCount;
 short ColorCount02;
 bool UseIndividualColors;
+short RandomColorLimit;
 HANDLE hProcess = 0;
 
 bool CheckGame()
@@ -264,6 +265,7 @@ void OnInitializeHook()
 	{
 		MessageBoxA(0, "The entered value for the Color count is bogus, so it shall be set to 20 in game.\nPlease check the .ini file.", 0, MB_ICONINFORMATION);
 		ToggleColorCount = 20;
+		RandomColorLimit = 20;
 	}
 	//ToggleColorCount = 17;
 
@@ -565,7 +567,7 @@ void OnInitializeHook()
 	MultiProtectedWriteByteArray(0x1402BC410, 21, ForCHSRandom, oldPageProtection);
 
 	//Sets it based on the Color Limit chosen by the user.
-	SingleProtectedWriteByte(0x1402BC418, 1, ToggleColorCount, oldPageProtection);
+	SingleProtectedWriteByte(0x1402BC418, 1, RandomColorLimit, oldPageProtection);
 
 
 	//An adjustment on Arcade Mode's Random generator for colors. Sets the modulo to 20 and moves the rest of the code one byte after.	
@@ -622,8 +624,9 @@ BOOL APIENTRY DllMain(HMODULE hModule,
 		{
 			CIniReader ini;
 			ToggleColorCount = ini.ReadInteger("Settings", "ToggleColorCount", VK_SPACE);
-			//ToggleColorCount = 17;
 			UseIndividualColors = ini.ReadInteger("Settings", "UseIndividualColorLimits", VK_SPACE);
+			RandomColorLimit = ini.ReadInteger("Settings", "RandomColorLimit", VK_SPACE);
+
 			CreateThread(nullptr, 0, (LPTHREAD_START_ROUTINE)OnInitializeHook, hModule, 0, nullptr);
 		}
 	case DLL_THREAD_ATTACH:
