@@ -127,135 +127,37 @@ DWORD MultiProtectedWriteByteArray(DWORD64 AddressToWrite, int length, BYTE Byte
 	return 0;
 }
 
-//How do I fix this.......?
-/*
-__declspec(naked) void sub_14024DB40(DWORD64 a1)
-{
-	__asm
-	{
-
-		mov[rsp + 0x08], rbx
-		mov[rsp + 0x10], rbp
-		mov[rsp + 0x18], rsi
-		push rdi
-		push r12
-		push r13
-		push r14
-		push r15
-		sub rsp, 0x40	//64
-		mov rsi, rcx
-		call 0x14024D950 //umvc3.exe+24D950 or call 0xfffffffffffffdf1
-		mov[rsi + 38], 00000000
-		mov r15d, 0x234 //564
-		lea rbx, [rsi] + 0x3C
-		lea r12, [rsi] + 0x90
-		mov r13d, 7
-		mov rcx, rsi
-		call 0x14024D140 //umvc3.exe+24D140 or 0xfffffffffffff5bb
-		xor ebp, ebp
-		mov[r12], eax
-		lea r14d, [rbp + 03]
-		mov rcx, rsi
-		call 0x14024D070 //umvc3.exe+24D070
-		mov[rbx], eax
-		cmp eax, 0x33 //51
-		je 0x14024DBCF
-		call 0x1400046D0
-		mov rcx, rax
-		call 0x14000AF80
-		mov edi, eax
-		mov eax, 0x66666667 //mov eax, 0xAAAAAAAB
-		mul edi
-		shr edx, 3 //shr edx, 02
-		lea ecx, [rdx + rdx * 4] //lea ecx, [rdx + rdx * 2]
-		sal ecx, 2 //add ecx, ecx
-		sub edi, ecx
-		call 0x140004700
-		lea rcx, [r15 + rbp]
-		mov[rax + rcx * 4], edi
-		mov edx, [rbx]
-		mov rcx, rsi
-		call 0x14024B4D0
-		inc rbp
-		add rbx, 04
-		dec r14
-		jne 0x14024DB94
-		add r12, 04
-		add r15, 03
-		dec r13
-		jne 0x14024DB82
-		mov[rsp + 0x20], 0x000003
-		mov[rsp + 0x24], 0x000023
-		mov[rsp + 0x28], 0x000005
-		mov[rsp + 0x2C], 0x000027
-		mov[rsp + 0x30], 0x000023
-		mov[rsp + 0x34], 0x000005
-		mov[rsp + 0x38], 0x000027
-		mov[rsp + 0x3C], 0x000003
-		call 0x140004700
-		mov rcx, rax
-		call 0x1400FAC50
-		cmp eax, 03
-		jna 0x14024DC54
-		call 0x1400046D0
-		mov rcx, rax
-		call 0x14000AF80
-		and eax, 03
-		cdqe
-		mov[rsi + 0x84], 0x33
-		lea rcx, [rax * 8 + 00000000]
-		mov eax, [rsp + rcx + 0x20]
-		mov[rsi + 0x88], eax
-		mov eax, [rsp + rcx + 0x24]
-		mov[rsi + 0x8C], eax
-		call 0x140004700
-		mov[rax + 0x918], 00000000
-		call 0x140004700
-		mov[rax + 0x91C], 00000006
-		call 0x140004700
-		mov[rax + 0x920], 00000006
-		call 0x140001AC0
-		mov edx, 0x012
-		mov rcx, rax
-		call 0x1402BC5D0
-		mov[rsi + 0x0A8], eax
-		movsxd  rbx, dword ptr[rsi + 0x38]
-		call 0x140004700
-		mov edx, [rsi + rbx * 4 + 0x00000090]
-		mov rcx, rax
-		call 0x1401CF670
-		call 0x140001AC0
-		test rax, rax
-		je 0x14024DCF6
-		movsxd  rcx, dword ptr[rsi + 0x38]
-		mov edx, [rsi + rcx * 4 + 0x90]
-		mov rcx, rax
-		call 0x14024E140
-		mov rbx, [rsp + 0x70]
-		mov rbp, [rsp + 0x78]
-		mov rsi, [rsp + 0x80]
-		add rsp, 0x40
-		pop r15
-		pop r14
-		pop r13
-		pop r12
-		pop rdi
-		ret
-
-	}
-}
-*/
-
-/*
-longlong* sub_Thing(longlong param_1, int param_2)
-{
-
-
-
-
-
-}
-*/
+//typedef int(__stdcall* _sub_14001E9B0)(int value);
+//_sub_14001E9B0 _14001E9B0;
+//
+//typedef void(__stdcall* sub_1402BC1C7)();
+//sub_1402BC1C7 _1402BC1C7;
+//
+//void __stdcall ForTheColorcounter(__int64 param_1, __int64 param_2, __int64 param_3, __int64 PossibleHighlightedColor, __int64 param_5, __int64 param_6, __int64 SomePointer, __int32 param_8, __int64 param_9, __int64 param_10, __int64 HighlightedCharacterID, __int64 param_12, __int64 param_13, __int64 param_14, __int64 param_15, __int64 param_16, __int64 param_17, __int64 param_18)
+//{
+//	//Gets the color limit of the character from the Color Limit Array.
+//	_14001E9B0 = (_sub_14001E9B0)(0x14001E9B0);	
+//	__int64 ResultColorTest = _14001E9B0(HighlightedCharacterID);
+//
+//	//param_2 = ResultColorTest;
+//	//How do I fix the game crashing?
+//
+//	//Throw Result in RAX Before Leaving?
+//
+//	/*
+//	Gotta convert this.
+//	  push ecx
+//		mov ecx,r14d
+//		call umvc3.exe+1E9B0
+//		dec eax
+//		 mov r9d,eax
+//		pop ecx
+//		jmp umvc3.exe+2BC1C7
+//	*/
+//
+//
+//	
+//}
 
 void OnInitializeHook()
 {
@@ -275,24 +177,6 @@ void OnInitializeHook()
 	DWORD oldPageProtection = 0;
 	short CHSValueBorder = (249 - (ToggleColorCount - 8));
 	short MSDValue = 2905;
-	/*
-	AllocConsole();
-	freopen("CONIN$", "r", stdin);
-	freopen("CONOUT$", "w", stdout);
-	freopen("CONOUT$", "w", stderr);
-
-	printf("Hi. This window is here for testing purposes.\n");
-	printf("Color Expansion Kit v2 asi test by Eternal Yoshi with help and thanks from EddieLopesRJ, TGE, catboy_lover, and Gneiss.\n");
-
-	printf("Value of ToggleColorCount from the ini is:\n");
-	printf("%u\n", (unsigned int)ToggleColorCount);
-
-	printf("meaning that the value of CHSValueBorder is:\n");
-	printf("%u\n", (unsigned int)CHSValueBorder);
-
-	printf("meaning that the value of UseIndividualColors is:\n");
-	printf("%u\n", (unsigned int)UseIndividualColors);
-	*/
 
 	//First we unlock the Magneto Alt Costume.	
 	SingleProtectedWriteByte(0x14036577A, 1, 0xFF, oldPageProtection);
@@ -473,26 +357,6 @@ void OnInitializeHook()
 	//For Testing Purposes.
 	//Licensing Board Portraits?
 	SingleProtectedWriteByte(0x140C510FF, 1, 0x0, oldPageProtection);
-	/*
-	//Arcade Mode Random selector test.
-	BYTE ACRandomA[] = { 0xB8, 0x39, 0x8E, 0xE3, 0x38 };
-	BYTE ByteShift = 0x02;
-	MultiProtectedWriteByteArray(0x14024DBB2, 5, ACRandomA, oldPageProtection);
-	SingleProtectedWriteByte(0x14024DBBB, 1, ByteShift, oldPageProtection);
-	BYTE ACRandomB[] = { 0x8D, 0x0C, 0xD2};
-	MultiProtectedWriteByteArray(0x14024DBBC, 3, ACRandomB, oldPageProtection);
-	*/
-	//This is so Arcade Mode uses the Character Select Portraits for the Next Stage preview.
-	//BYTE CHSPortraitRef[] = { 0xA4, 0xAF, 0x65 };
-	//BYTE ForSomeFunctionB[] = { 0xB2, 0xB0,0x65 };
-
-	//MultiProtectedWriteByteArray(0x14041471A, 3, CHSPortraitRef, oldPageProtection);
-	//SingleProtectedWriteByte(0x14041473D, 1, 0x00, oldPageProtection);
-	//SingleProtectedWriteByte(0x140414742, 1, 0x01, oldPageProtection);
-	//SingleProtectedWriteByte(0x1402BDF3A, 1, 0xEB, oldPageProtection);
-	//SingleProtectedWriteByte(0x140414610, 1, 0x01, oldPageProtection);
-	//SingleProtectedWriteByte(0x14041460B, 1, 0x00, oldPageProtection);
-	//MultiProtectedWriteByteArray(0x1404145E2, 3, ForSomeFunctionB, oldPageProtection);
 
 	//This is for the rest of the Color Expansion Code to defeat checks for color borders.
 	BYTE ForSomeFunction[] = { 0x83, 0xC8 };
@@ -516,14 +380,23 @@ void OnInitializeHook()
 	MultiProtectedWriteByteArray(0x1402BCAB6, 5, ForColor9, oldPageProtection);
 
 
-	//Originallly written by Eddie to ignore all test function and simply return the result of CalculateNewColorID.
+	////Originallly written by Eddie to ignore all test function and simply return the result of CalculateNewColorID.
+	//BYTE ForSomeFunctionE[] =
+	//{ 0x83, 0xC8, 0xFF,
+	//	0xBA, 0x01, 0x00, 0x00, 0x00, 0x45, 0x84, 0xC9, 0x0F, 0x45, 0xD0, 0x44, 0x89, 0xC1, 0x45, 0x31,
+	//	0xC0, 0x41, 0xB9, 0x13, 0x00, 0x00, 0x90, 0xE8, 0xE4, 0x94, 0x19, 0x00, 0xE9, 0xE2, 0x00, 0x00,
+	//	0x00 };
+	//MultiProtectedWriteByteArray(0x1402BC1AD, 36, ForSomeFunctionE, oldPageProtection);
+	//SingleProtectedWriteByte(0x1402BC1C3, 1, SecondaryColorCount, oldPageProtection);
+
+	//Originallly written by Eddie to ignore all test function and simply return the result of CalculateNewColorID. Modified.
 	BYTE ForSomeFunctionE[] =
-	{ 0x83, 0xC8, 0xFF,
+	{																				  0x83, 0xC8, 0xFF,
 		0xBA, 0x01, 0x00, 0x00, 0x00, 0x45, 0x84, 0xC9, 0x0F, 0x45, 0xD0, 0x44, 0x89, 0xC1, 0x45, 0x31,
-		0xC0, 0x41, 0xB9, 0x13, 0x00, 0x00, 0x00, 0xE8, 0xE4, 0x94, 0x19, 0x00, 0xE9, 0xE2, 0x00, 0x00,
-		0x00 };
-	MultiProtectedWriteByteArray(0x1402BC1AD, 36, ForSomeFunctionE, oldPageProtection);
-	SingleProtectedWriteByte(0x1402BC1C3, 1, SecondaryColorCount, oldPageProtection);
+		0xC0, 0xEB, 0x1D, 0x90, 0x00, 0x00, 0x90, 0xE8, 0xE4, 0x94, 0x19, 0x00, 0xE9, 0xE2, 0x00, 0x00, 
+		0x00, 0xCC, 0xCC, 0xCC ,0xCC ,0xCC, 0xCC, 0xCC, 0xCC, 0xCC, 0xCC, 0xCC, 0xCC, 0xCC, 0xCC, 0xCC};
+	MultiProtectedWriteByteArray(0x1402BC1AD, 51, ForSomeFunctionE, oldPageProtection);
+	//SingleProtectedWriteByte(0x1402BC1C3, 1, SecondaryColorCount, oldPageProtection);
 
 	//Also written by Eddie for the sake of the numerical text. I believe this is actually the array of colors.
 	BYTE ForSomeFunctionF[] =
@@ -602,12 +475,20 @@ void OnInitializeHook()
 
 	MultiProtectedWriteByteArray(0x14024DBA0, 376, ForArcadeRandomRewrite, oldPageProtection);
 
+	//Thanks to Gneiss for his gift that showed me what to change and how.
+	BYTE ForTheScroller[] = 
+	{ 0x51, 0x41, 0x8B, 0xCE, 0xE8, 0xC7, 0x27, 0xD6, 0xFF, 0xFF, 0xC8, 0x44, 0x8B, 0xC8, 0x59, 0xEB,
+	  0xD6, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0xC3, 0xCC, 0xCC, 0xCC };
+	MultiProtectedWriteByteArray(0x1402BC1E0, 32, ForTheScroller, oldPageProtection);
+
+
 	//For Taskmaster.
 	//BYTE ForTaskmaster[] =
 	//{
 	//	0x7D, 0x13
 	//};
 	//Trampoline* tramp = Trampoline::MakeTrampoline(GetModuleHandle(nullptr));
+	//InjectHook(_addr(0x1402BC1C1), tramp->Jump(ForTheColorcounter), PATCH_JUMP);
 
 
 }
