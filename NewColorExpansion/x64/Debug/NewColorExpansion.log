@@ -62,9 +62,10 @@ c:\users\eternal yoshi\source\repos\newcolorexpansion\newcolorexpansion\dllmain.
 c:\users\eternal yoshi\source\repos\newcolorexpansion\newcolorexpansion\dllmain.cpp(266): warning C4244: 'argument': conversion from 'short' to 'BYTE', possible loss of data
 c:\users\eternal yoshi\source\repos\newcolorexpansion\newcolorexpansion\dllmain.cpp(267): warning C4244: 'argument': conversion from 'short' to 'BYTE', possible loss of data
 c:\users\eternal yoshi\source\repos\newcolorexpansion\newcolorexpansion\dllmain.cpp(351): warning C4244: 'argument': conversion from 'short' to 'BYTE', possible loss of data
-c:\users\eternal yoshi\source\repos\newcolorexpansion\newcolorexpansion\dllmain.cpp(443): warning C4244: 'argument': conversion from 'short' to 'BYTE', possible loss of data
-  LINK : E:\ULTIMATE MARVEL VS. CAPCOM 3\Scripts\NewColorExpansion.dll not found or not built by the last incremental link; performing full link
+c:\users\eternal yoshi\source\repos\newcolorexpansion\newcolorexpansion\dllmain.cpp(442): warning C4244: 'argument': conversion from 'short' to 'BYTE', possible loss of data
   NewColorExpansion.vcxproj -> E:\ULTIMATE MARVEL VS. CAPCOM 3\Scripts\NewColorExpansion.dll
   Renames the .dll that comes out to be a .asi.
+  Could Not Find E:\ULTIMATE MARVEL VS. CAPCOM 3\Scripts\ColorExpansion.asi
+  Could Not Find E:\ULTIMATE MARVEL VS. CAPCOM 3\Scripts\ColorExpansion.ini
   C:\Users\Eternal Yoshi\source\repos\NewColorExpansion\NewColorExpansion\ColorExpansion.ini
   1 File(s) copied
