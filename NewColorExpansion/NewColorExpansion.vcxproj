@@ -42,7 +42,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>ClangCL</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
@@ -114,7 +114,7 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <AdditionalUsingDirectories>%(AdditionalUsingDirectories)</AdditionalUsingDirectories>
-      <LanguageStandard>stdcpplatest</LanguageStandard>
+      <LanguageStandard>stdcpp20</LanguageStandard>
       <AdditionalOptions>-D _CRT_SECURE_NO_WARNINGS %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
@@ -179,12 +179,6 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\3Testr\3Testr\framework.h" />
-    <ClInclude Include="..\..\3Testr\3Testr\geom.h" />
-    <ClInclude Include="..\..\3Testr\3Testr\mem.h" />
-    <ClInclude Include="..\..\3Testr\3Testr\resource.h" />
-    <ClInclude Include="..\..\3Testr\3Testr\resource1.h" />
-    <ClInclude Include="..\..\3Testr\3Testr\sigscan.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="iniReader.h" />
     <ClInclude Include="MemoryMgr.h" />
@@ -193,9 +187,6 @@
     <ClInclude Include="umvc3utils.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\3Testr\3Testr\geom.cpp" />
-    <ClCompile Include="..\..\3Testr\3Testr\mem.cpp" />
-    <ClCompile Include="..\..\3Testr\3Testr\sigscan.cpp" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="iniReader.cpp" />
     <ClCompile Include="pch.cpp">

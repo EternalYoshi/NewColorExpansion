@@ -36,24 +36,6 @@
     <ClInclude Include="Trampoline.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\3Testr\3Testr\framework.h">
-      <Filter>code</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\3Testr\3Testr\geom.h">
-      <Filter>code</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\3Testr\3Testr\mem.h">
-      <Filter>code</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\3Testr\3Testr\resource.h">
-      <Filter>code</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\3Testr\3Testr\resource1.h">
-      <Filter>code</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\3Testr\3Testr\sigscan.h">
-      <Filter>code</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -67,15 +49,6 @@
     </ClCompile>
     <ClCompile Include="iniReader.cpp">
       <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\3Testr\3Testr\geom.cpp">
-      <Filter>code</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\3Testr\3Testr\mem.cpp">
-      <Filter>code</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\3Testr\3Testr\sigscan.cpp">
-      <Filter>code</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

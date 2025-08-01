@@ -40,6 +40,43 @@ short ColorCount02;
 bool UseIndividualColors;
 short RandomColorLimit;
 HANDLE hProcess = 0;
+uintptr_t moduleBase = 0;
+DWORD_PTR ScrollerUpdater = 0;
+char TCCForScroller = 0;
+//bool FirstHook(void * toHook, void * ourFunct, int len)
+//{
+//	if(len <5)
+//	{
+//		return false;
+//	}
+//
+//	DWORD curProtection;
+//	VirtualProtect(toHook, len, PAGE_EXECUTE_READWRITE, &curProtection);
+//
+//	memset(toHook, 0x90, len);
+//
+//	DWORD relativeAddress = ((DWORD)ourFunct - (DWORD)toHook) - 5;
+//
+//	*(BYTE*)toHook = 0xE9;
+//	*(DWORD*)((DWORD)toHook + 1) = relativeAddress;
+//
+//	DWORD temp;
+//	VirtualProtect(toHook, len, curProtection, &temp);
+//
+//	return true;
+//
+//}
+//
+//DWORD jmpBackaddy;
+//void __declspec(naked) ourFunct(){
+//	__asm{
+//		lea edx, [r9 - (ToggleColorCount - 1)]
+//		call 0x140455640
+//		jmp[jmpBackaddy]
+//	
+//	}
+//
+//}
 
 bool CheckGame()
 {
@@ -159,11 +196,87 @@ DWORD MultiProtectedWriteByteArray(DWORD64 AddressToWrite, int length, BYTE Byte
 //	
 //}
 
+//typedef void(*HookTake2_wrapper)();
+//HookTake2_wrapper Hook_wrapper;
+//
+////assembly snippet wrapper around our mid function hook
+//extern "C" void my_hook_wrapper();
+//
+//void HookTake2(void* src, void* dst, size_t len) 
+//{
+//
+//	void* PtLoc = (void*)((uintptr_t)src - off);
+//
+//	void* Trampoline = nullptr;
+//
+//	void* retloc = nullptr;
+//
+//	char pJump[] = {0xFF,0x25,0x00,0x00,0x00,0x00};
+//	char pCall[] = {0x08,0xEB,0x00,0x00,0x00,0x02,0x15,0xFF};
+//
+//	while (!Trampoline)
+//	{
+//
+//		Trampoline = VirtualAlloc(PtLoc, 50, MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE);
+//		PtLoc = (void*)((uintptr_t)PtLoc + 0x50);
+//
+//	}
+//
+//	tramp_loc = Trampoline;
+//
+//	memcpy(StolenByte, (char*)src, len);
+//
+//	//write call
+//	*(UINT64*)Trampoline = INST_CALL;
+//	PtLoc = (void*)((u64)Trampoline + ARRAYSIZE(pCall));
+//
+//	//dst = our detour function
+//	*(uintptr_t*)PtLoc = (u64)dst;
+//
+//	PtLoc = (void*)((u64)PtLoc + 8);
+//
+//	// set retloc pointer where code will return after our detour function to execute stolen bytes
+//	retLoc = PtLoc;
+//
+//	//write stolen bytes back
+//	memcpy(PtLoc, StolenByte, len);
+//
+//	PtLoc = (void*)((u64)PtLoc + len);
+//
+//	// write a normal jump to our original function
+//	*(char*)PtLoc = (char)0xE9;
+//	PtLoc = (void*)((u64)PtLoc + 1);
+//
+//	*(int*)PtLoc = (uintptr_t)src - (uintptr_t)PtLoc + off2;
+//
+//	//hook original function to our trampoline
+//	Hook((char*)src, (char*)Trampoline, len);
+//}
+
+DWORD_PTR ForTheCSSColorCounter_JmpBack = 0;
+//R9 has the ToggleColorCount value, but how do I get that in here?
+__attribute__((naked)) void ForTheCSSColorCounter_Hook()
+{
+	__asm
+	{
+		mov r8, r9
+		inc r8
+		sub r8, r9
+		lea edx, [r8]
+		call qword ptr [ScrollerUpdater]
+		jmp qword ptr [ForTheCSSColorCounter_JmpBack]
+	}
+}
+
+
+
 void OnInitializeHook()
 {
+	//First off the module base.
+	moduleBase = (uintptr_t)GetModuleHandle(L"umvc3.exe");
 
 	//For Testing purposes.
-	if (ToggleColorCount < 0 || ToggleColorCount == NULL)
+	if (ToggleColorCount < 0 || ToggleColorCount == NULL || ToggleColorCount > 255)
 	{
 		MessageBoxA(0, "The entered value for the Color count is bogus, so it shall be set to 20 in game.\nPlease check the .ini file.", 0, MB_ICONINFORMATION);
 		ToggleColorCount = 20;
@@ -176,13 +289,14 @@ void OnInitializeHook()
 	short TertiaryColorCount = ToggleColorCount + 1;
 	DWORD oldPageProtection = 0;
 	short CHSValueBorder = (249 - (ToggleColorCount - 8));
+
 	short MSDValue = 2905;
 
 	//First we unlock the Magneto Alt Costume.	
-	SingleProtectedWriteByte(0x14036577A, 1, 0xFF, oldPageProtection);
+	SingleProtectedWriteByte((moduleBase + 0x36577A), 1, 0xFF, oldPageProtection);
 
 	//Next we update the color limits that house the exact value and unlock slot 9.
-	SingleProtectedWriteByte(0x1400578A4, 1, 0xFF, oldPageProtection);
+	SingleProtectedWriteByte((moduleBase + 0x578A4), 1, 0xFF, oldPageProtection);
 	SingleProtectedWriteByte(0x1402B9AD5, 1, ToggleColorCount, oldPageProtection);
 	SingleProtectedWriteByte(0x14036DAB0, 1, 0xFF, oldPageProtection);
 	SingleProtectedWriteByte(0x1403704DC, 1, ToggleColorCount, oldPageProtection);
@@ -379,16 +493,6 @@ void OnInitializeHook()
 	BYTE ForColor9[] = { 0xEB,0x1A,0x90,0x90,0x90 };
 	MultiProtectedWriteByteArray(0x1402BCAB6, 5, ForColor9, oldPageProtection);
 
-
-	////Originallly written by Eddie to ignore all test function and simply return the result of CalculateNewColorID.
-	//BYTE ForSomeFunctionE[] =
-	//{ 0x83, 0xC8, 0xFF,
-	//	0xBA, 0x01, 0x00, 0x00, 0x00, 0x45, 0x84, 0xC9, 0x0F, 0x45, 0xD0, 0x44, 0x89, 0xC1, 0x45, 0x31,
-	//	0xC0, 0x41, 0xB9, 0x13, 0x00, 0x00, 0x90, 0xE8, 0xE4, 0x94, 0x19, 0x00, 0xE9, 0xE2, 0x00, 0x00,
-	//	0x00 };
-	//MultiProtectedWriteByteArray(0x1402BC1AD, 36, ForSomeFunctionE, oldPageProtection);
-	//SingleProtectedWriteByte(0x1402BC1C3, 1, SecondaryColorCount, oldPageProtection);
-
 	//Originallly written by Eddie to ignore all test function and simply return the result of CalculateNewColorID. Modified.
 	BYTE ForSomeFunctionE[] =
 	{																				  0x83, 0xC8, 0xFF,
@@ -480,12 +584,24 @@ void OnInitializeHook()
 	  0xD6, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0xC3, 0xCC, 0xCC, 0xCC };
 	MultiProtectedWriteByteArray(0x1402BC1E0, 32, ForTheScroller, oldPageProtection);
 
-	//Test Change to reroute the Silhouette to 255 instead of 9.
+	//Reroute the Silhouette portrait to 255 instead of 99.
 	BYTE ForColorOneHundred[] =
 	{ 0x68, 0x73, 0x5F, 0x62, 0x6F, 0x64, 0x79, 0x5C, 0x62, 0x5F, 0x25, 0x73, 0x32, 0x35, 0x35, 0x5F,
 	  0x42, 0x4D, 0x5F, 0x48, 0x51, 0x5F, 0x4E, 0x4F, 0x4D, 0x49, 0x50
 	};
 	MultiProtectedWriteByteArray(0x140B2A380, 27, ForColorOneHundred, oldPageProtection);
+
+
+	//Sets up Trampoline Hook for the Scroller.
+	SingleProtectedWriteByte(0x1403704EA, 1, 0x90, oldPageProtection);
+	SingleProtectedWriteByte(0x1403704EB, 1, 0x90, oldPageProtection);
+	SingleProtectedWriteByte(0x1403704EC, 1, 0x90, oldPageProtection);
+	SingleProtectedWriteByte(0x1403704ED, 1, 0x90, oldPageProtection);
+	ScrollerUpdater = moduleBase + 0x455640;
+	ForTheCSSColorCounter_JmpBack = moduleBase + 0x3704EE;
+	TCCForScroller = ToggleColorCount - 1;
+	Trampoline* tramp = Trampoline::MakeTrampoline(GetModuleHandle(nullptr));
+	InjectHook(_addr(0x1403704E5), tramp->Jump(ForTheCSSColorCounter_Hook), PATCH_JUMP);
 
 	//For Taskmaster.
 	//BYTE ForTaskmaster[] =
