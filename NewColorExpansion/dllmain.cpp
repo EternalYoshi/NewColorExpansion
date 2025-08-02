@@ -43,6 +43,9 @@ HANDLE hProcess = 0;
 uintptr_t moduleBase = 0;
 DWORD_PTR ScrollerUpdater = 0;
 char TCCForScroller = 0;
+DWORD_PTR Fun_1402B9AE2 = 0;
+char TCCForComparison = 0;
+
 //bool FirstHook(void * toHook, void * ourFunct, int len)
 //{
 //	if(len <5)
@@ -253,8 +256,10 @@ DWORD MultiProtectedWriteByteArray(DWORD64 AddressToWrite, int length, BYTE Byte
 //	Hook((char*)src, (char*)Trampoline, len);
 //}
 
+
+
 DWORD_PTR ForTheCSSColorCounter_JmpBack = 0;
-//R9 has the ToggleColorCount value, but how do I get that in here?
+//This is to ensure the color counter stays in sync on Character Select, regardless of whether or not it goes past 130.
 __attribute__((naked)) void ForTheCSSColorCounter_Hook()
 {
 	__asm
@@ -268,6 +273,21 @@ __attribute__((naked)) void ForTheCSSColorCounter_Hook()
 	}
 }
 
+DWORD_PTR FUN_1402B9AD0_JmpBack = 0;
+//This is to ensure the function doesn't spit out negative numbers for the number it's meant to be comparing to.
+__attribute__((naked)) void FUN_1402B9AD0()
+{
+	__asm
+	{
+		xor eax, eax
+		cmp r8d, [TCCForComparison]
+		jnl [Fun_1402B9AE2]
+		test r8d, r8d
+		cmovs r8d, eax
+		mov eax, r8d
+		repe ret
+	}
+}
 
 
 void OnInitializeHook()
@@ -602,6 +622,17 @@ void OnInitializeHook()
 	TCCForScroller = ToggleColorCount - 1;
 	Trampoline* tramp = Trampoline::MakeTrampoline(GetModuleHandle(nullptr));
 	InjectHook(_addr(0x1403704E5), tramp->Jump(ForTheCSSColorCounter_Hook), PATCH_JUMP);
+
+	Fun_1402B9AE2 = moduleBase + 0x2B9AE2;
+	TCCForComparison = ToggleColorCount;
+	BYTE NoppingTheRest[] =
+	{ 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90,
+	  0x90, 0x90, 0x90, 0x90, 0x90
+	};
+	MultiProtectedWriteByteArray(0x1402B9AD5, 21, NoppingTheRest, oldPageProtection);
+
+	InjectHook(_addr(0x1402B9AD0), tramp->Jump(FUN_1402B9AD0), PATCH_JUMP);
+
 
 	//For Taskmaster.
 	//BYTE ForTaskmaster[] =
