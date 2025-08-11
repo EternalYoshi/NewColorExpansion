@@ -25,7 +25,7 @@ using namespace Memory::VP;
 #define undefined8  long long*
 #define undefined7  long long
 #define undefined2  int
-
+typedef unsigned __int64 QWORD;
 typedef int(*code)(longlong* param_1);
 typedef int(*codenoarg)();
 typedef void(*method)(void);
@@ -45,6 +45,28 @@ DWORD_PTR ScrollerUpdater = 0;
 char TCCForScroller = 0;
 DWORD_PTR Fun_1402B9AE2 = 0;
 char TCCForComparison = 0;
+DWORD_PTR BACKTOFUN_14041AA1B = 0;
+DWORD_PTR FUN_140058F90 = 0;
+DWORD_PTR aUiChsChsFaceAC = 0;
+DWORD_PTR FUN_1404C4410 = 0;
+DWORD_PTR FUN_140001B10 = 0;
+DWORD_PTR FUN_140455260 = 0;
+DWORD_PTR FUN_140151080 = 0;
+DWORD_PTR FUN_140E17570 = 0;
+DWORD_PTR FUN_14001DCA0 = 0;
+
+DWORD_PTR FUN_140321020 = 0;
+DWORD_PTR uChrColorType_vftable = 0;
+DWORD_PTR FUN_1402C9D70 = 0;
+DWORD_PTR FUN_1400012E0 = 0;
+DWORD_PTR FUN_140D2AD20 = 0;
+DWORD_PTR FUN_14035F770 = 0;
+unsigned long ForColorBorderArray = 4278190080;
+DWORD_PTR FUN_ = 0;
+DWORD_PTR FUN_140EE0030 = 0;
+DWORD_PTR FUN_14035F7E0_ADDR = 0;
+DWORD_PTR sub_14045D4F0 = 0;
+DWORD_PTR uChrColorType_TypeInfo = 0x140D5B848;
 
 //bool FirstHook(void * toHook, void * ourFunct, int len)
 //{
@@ -95,6 +117,8 @@ bool CheckGame()
 		return false;
 	}
 }
+
+#pragma region ProtectedWrites
 
 DWORD SingleProtectedWriteByte(DWORD64 AddressToWrite, int length, BYTE ByteToWrite, DWORD oldPageProtection)
 {
@@ -167,96 +191,19 @@ DWORD MultiProtectedWriteByteArray(DWORD64 AddressToWrite, int length, BYTE Byte
 	return 0;
 }
 
-//typedef int(__stdcall* _sub_14001E9B0)(int value);
-//_sub_14001E9B0 _14001E9B0;
-//
-//typedef void(__stdcall* sub_1402BC1C7)();
-//sub_1402BC1C7 _1402BC1C7;
-//
-//void __stdcall ForTheColorcounter(__int64 param_1, __int64 param_2, __int64 param_3, __int64 PossibleHighlightedColor, __int64 param_5, __int64 param_6, __int64 SomePointer, __int32 param_8, __int64 param_9, __int64 param_10, __int64 HighlightedCharacterID, __int64 param_12, __int64 param_13, __int64 param_14, __int64 param_15, __int64 param_16, __int64 param_17, __int64 param_18)
+#pragma endregion
+
+//int64 GetEntryPoint()
 //{
-//	//Gets the color limit of the character from the Color Limit Array.
-//	_14001E9B0 = (_sub_14001E9B0)(0x14001E9B0);	
-//	__int64 ResultColorTest = _14001E9B0(HighlightedCharacterID);
-//
-//	//param_2 = ResultColorTest;
-//	//How do I fix the game crashing?
-//
-//	//Throw Result in RAX Before Leaving?
-//
-//	/*
-//	Gotta convert this.
-//	  push ecx
-//		mov ecx,r14d
-//		call umvc3.exe+1E9B0
-//		dec eax
-//		 mov r9d,eax
-//		pop ecx
-//		jmp umvc3.exe+2BC1C7
-//	*/
-//
-//
-//	
+//	static int64 addr = reinterpret_cast<int64>(GetModuleHandle(nullptr));
+//	return addr;
 //}
-
-//typedef void(*HookTake2_wrapper)();
-//HookTake2_wrapper Hook_wrapper;
 //
-////assembly snippet wrapper around our mid function hook
-//extern "C" void my_hook_wrapper();
-//
-//void HookTake2(void* src, void* dst, size_t len) 
+//int64 _addr(int64 addr)
 //{
-//
-//	void* PtLoc = (void*)((uintptr_t)src - off);
-//
-//	void* Trampoline = nullptr;
-//
-//	void* retloc = nullptr;
-//
-//	char pJump[] = {0xFF,0x25,0x00,0x00,0x00,0x00};
-//	char pCall[] = {0x08,0xEB,0x00,0x00,0x00,0x02,0x15,0xFF};
-//
-//	while (!Trampoline)
-//	{
-//
-//		Trampoline = VirtualAlloc(PtLoc, 50, MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE);
-//		PtLoc = (void*)((uintptr_t)PtLoc + 0x50);
-//
-//	}
-//
-//	tramp_loc = Trampoline;
-//
-//	memcpy(StolenByte, (char*)src, len);
-//
-//	//write call
-//	*(UINT64*)Trampoline = INST_CALL;
-//	PtLoc = (void*)((u64)Trampoline + ARRAYSIZE(pCall));
-//
-//	//dst = our detour function
-//	*(uintptr_t*)PtLoc = (u64)dst;
-//
-//	PtLoc = (void*)((u64)PtLoc + 8);
-//
-//	// set retloc pointer where code will return after our detour function to execute stolen bytes
-//	retLoc = PtLoc;
-//
-//	//write stolen bytes back
-//	memcpy(PtLoc, StolenByte, len);
-//
-//	PtLoc = (void*)((u64)PtLoc + len);
-//
-//	// write a normal jump to our original function
-//	*(char*)PtLoc = (char)0xE9;
-//	PtLoc = (void*)((u64)PtLoc + 1);
-//
-//	*(int*)PtLoc = (uintptr_t)src - (uintptr_t)PtLoc + off2;
-//
-//	//hook original function to our trampoline
-//	Hook((char*)src, (char*)Trampoline, len);
+//	static int64 ImageBase = 0x140000000;
+//	return GetEntryPoint() - ImageBase + addr;
 //}
-
-
 
 DWORD_PTR ForTheCSSColorCounter_JmpBack = 0;
 //This is to ensure the color counter stays in sync on Character Select, regardless of whether or not it goes past 130.
@@ -268,12 +215,11 @@ __attribute__((naked)) void ForTheCSSColorCounter_Hook()
 		inc r8
 		sub r8, r9
 		lea edx, [r8]
-		call qword ptr [ScrollerUpdater]
-		jmp qword ptr [ForTheCSSColorCounter_JmpBack]
+		call qword ptr[ScrollerUpdater]
+		jmp qword ptr[ForTheCSSColorCounter_JmpBack]
 	}
 }
 
-DWORD_PTR FUN_1402B9AD0_JmpBack = 0;
 //This is to ensure the function doesn't spit out negative numbers for the number it's meant to be comparing to.
 __attribute__((naked)) void FUN_1402B9AD0()
 {
@@ -281,12 +227,293 @@ __attribute__((naked)) void FUN_1402B9AD0()
 	{
 		xor eax, eax
 		cmp r8d, [TCCForComparison]
-		jnl [Fun_1402B9AE2]
+		jnl[Fun_1402B9AE2]
 		test r8d, r8d
 		cmovs r8d, eax
 		mov eax, r8d
 		repe ret
 	}
+}
+
+__attribute__((naked)) void ForTheLicenseBoardPart1()
+{
+	__asm
+	{
+		mov ecx, r12d
+		call[FUN_140058F90]
+		lea rdx, [aUiChsChsFaceAC]
+		lea rcx, [rbp + 0x17F8]
+		mov r8, rax
+		mov r9d, r14d
+		call[FUN_1404C4410]
+		call[FUN_140001B10]
+		lea rcx, [rbp + 0x17F8]
+		mov rdi, [rax]
+		mov rbx, rax
+		call [FUN_14001DCA0]
+		lea rcx, [rbp + 0x15C0]
+		mov r9b, 0x01
+		xor edx, edx
+		mov r8, rax
+		call[FUN_140455260]
+		mov rcx, rax
+		call[FUN_140151080]
+		lea rdx, [FUN_140E17570]
+		mov r9d, 0x80
+		mov r8, rax
+		mov rcx, rbx
+		call qword ptr[rdi + 0x60]
+		inc r14d
+		lea r15, [r15 + 0x08]
+		mov[r15 - 0x08], rax
+		cmp r14d, [TCCForComparison]
+		jb [ForTheLicenseBoardPart1]
+		jmp qword ptr [BACKTOFUN_14041AA1B]
+	}
+}
+
+void UpdateThePointerValues()
+{
+	uChrColorType_vftable = *((DWORD_PTR*)uChrColorType_vftable);
+}
+
+__attribute__((naked)) void ForTheColorBordersLoop()
+{
+	__asm
+	{
+		mov ecx, ForColorBorderArray//mov ecx, dword ptr [rip + FUN_140D2AD20]
+		lea rax, [rax + 0x20]
+		mov[rax - 0x24], ecx
+		mov ecx, ForColorBorderArray
+		mov[rax - 0x20], ecx
+		mov ecx, ForColorBorderArray
+		mov[rax - 0x1C], ecx
+		mov ecx, ForColorBorderArray
+		mov[rax - 0x18], ecx
+		mov ecx, ForColorBorderArray
+		mov[rax - 0x14], ecx
+		mov ecx, ForColorBorderArray
+		mov[rax - 0x10], ecx
+		mov ecx, ForColorBorderArray
+		mov[rax - 0x0C], ecx
+		mov ecx, ForColorBorderArray
+		mov[rax - 0x08], ecx
+		dec rdx
+		jne[ForTheColorBordersLoop]
+		mov rax, rbx
+		add rsp, 0x20
+		pop rbx
+		ret
+	}
+}
+
+__attribute__((naked)) void ForTheColorBorders()
+{
+	__asm
+	{
+		push rbx
+		sub rsp, 0x20
+		mov rbx, rcx
+		call[FUN_140321020]
+		mov rax, uChrColorType_vftable
+		lea rcx, [rbx + 48]
+		mov r9, FUN_1402C9D70
+		mov edx, 0x04
+		mov r8d, 0x1A0
+		mov[rbx], rax
+		call[FUN_1400012E0]
+		lea rax, [rbx + 0x4C]
+		mov edx, 0x34
+		nop dword ptr[rax + 0x00]
+		mov ecx, ForColorBorderArray//mov ecx, dword ptr [rip + FUN_140D2AD20]
+		lea rax, [rax + 0x20]
+		mov[rax - 0x24], ecx
+		mov ecx, ForColorBorderArray
+		mov[rax - 0x20], ecx
+		mov ecx, ForColorBorderArray
+		mov[rax - 0x1C], ecx
+		mov ecx, ForColorBorderArray
+		mov[rax - 0x18], ecx
+		mov ecx, ForColorBorderArray
+		mov[rax - 0x14], ecx
+		mov ecx, ForColorBorderArray
+		mov[rax - 0x10], ecx
+		mov ecx, ForColorBorderArray
+		mov[rax - 0x0C], ecx
+		mov ecx, ForColorBorderArray
+		mov[rax - 0x08], ecx
+		dec rdx
+		jne[ForTheColorBordersLoop]
+		mov rax, rbx
+		add rsp, 0x20
+		pop rbx
+		ret
+	}
+}
+
+__attribute__((naked)) void FUN_14035FEF0()
+{
+	__asm
+	{
+		lea rcx, dword ptr [uChrColorType_TypeInfo]
+		jmp     sub_14045D4F0
+	}
+}
+
+__attribute__((naked)) void FUN_14035F7E0()
+{
+	__asm
+	{
+		mov[rsp + 0x08], rbx
+		mov[rsp + 0x10], rbp
+		mov[rsp + 0x18], rsi
+		push rdi
+		sub rsp, 0x20
+		mov esi, edx
+		mov rbp, rcx
+		//call umvc3.exe+35FEF0
+	}
+}
+
+__attribute__((naked)) void ForTheColorBorders_uChrColorTypeTypeInfoPartTwo()
+{
+	__asm
+	{
+		
+		add rsp, 0x28
+		retn
+	}
+}
+
+__attribute__((naked)) void ForTheColorBorders_uChrColorTypeTypeInfo()
+{
+	__asm
+	{
+		sub rsp, 0x28
+		mov edx, 0x10
+		mov ecx, 0x06C8
+		call [ForTheColorBorders]
+		test rax, rax
+		je [ForTheColorBorders_uChrColorTypeTypeInfoPartTwo]
+		mov rcx, rax
+		add rsp, 0x28
+		jmp qword ptr uChrColorType_vftable
+		add rsp, 0x28
+		retn
+	}
+}
+
+
+
+
+//
+//__attribute__((naked)) void ForTheColorBordersLoop()
+//{
+//	__asm
+//	{
+//		mov ecx, ForColorBorderArray//mov ecx, dword ptr [rip + FUN_140D2AD20]
+//		lea rax, [rax + 0x20]
+//		mov[rax - 0x2C], ecx
+//		mov ecx, ForColorBorderArray
+//		mov[rax - 0x28], ecx
+//		mov ecx, ForColorBorderArray
+//		mov[rax - 0x24], ecx
+//		mov ecx, ForColorBorderArray
+//		mov[rax - 0x20], ecx
+//		mov ecx, ForColorBorderArray
+//		mov[rax - 0x1C], ecx
+//		mov ecx, ForColorBorderArray
+//		mov[rax - 0x18], ecx
+//		mov ecx, ForColorBorderArray
+//		mov[rax - 0x14], ecx
+//		mov ecx, ForColorBorderArray
+//		mov[rax - 0x10], ecx
+//		mov ecx, ForColorBorderArray
+//		mov[rax - 0x0C], ecx
+//		mov ecx, ForColorBorderArray
+//		mov[rax - 0x08], ecx
+//		dec rdx
+//		jne[ForTheColorBordersLoop]
+//		mov rax, rbx
+//		add rsp, 0x20
+//		pop rbx
+//		ret
+//	}
+//}
+//
+//__attribute__((naked)) void ForTheColorBorders()
+//{
+//	__asm
+//	{
+//		push rbx
+//		sub rsp, 0x20
+//		mov rbx, rcx
+//		call [FUN_140321020]
+//		mov rax, uChrColorType_vftable
+//		lea rcx, [rbx + 48]
+//		mov r9, FUN_1402C9D70
+//		mov edx, 0x04
+//		mov r8d, 0x1A0
+//		mov[rbx], rax
+//		call [FUN_1400012E0]
+//		lea rax, [rbx + 0x4C]
+//		mov edx, 0x34
+//		nop dword ptr [rax + 0x00]
+//		mov ecx, ForColorBorderArray//mov ecx, dword ptr [rip + FUN_140D2AD20]
+//		lea rax, [rax + 0x20]
+//		mov[rax - 0x2C], ecx
+//		mov ecx, ForColorBorderArray
+//		mov[rax - 0x28], ecx
+//		mov ecx, ForColorBorderArray
+//		mov[rax - 0x24], ecx
+//		mov ecx, ForColorBorderArray
+//		mov[rax - 0x20], ecx
+//		mov ecx, ForColorBorderArray
+//		mov[rax - 0x1C], ecx
+//		mov ecx, ForColorBorderArray
+//		mov[rax - 0x18], ecx
+//		mov ecx, ForColorBorderArray
+//		mov[rax - 0x14], ecx
+//		mov ecx, ForColorBorderArray
+//		mov[rax - 0x10], ecx
+//		mov ecx, ForColorBorderArray
+//		mov[rax - 0x0C], ecx
+//		mov ecx, ForColorBorderArray
+//		mov[rax - 0x08], ecx
+//		dec rdx
+//		jne [ForTheColorBordersLoop]
+//		mov rax, rbx
+//		add rsp, 0x20
+//		pop rbx
+//		ret
+//	}
+//}
+
+
+QWORD* __fastcall sub_14035F730(QWORD* a1)
+{
+	//char* v2; // rax
+	//__int64 v3; // rdx
+
+	//((void (*)(void))FUN_140321020)();
+	//*a1 = uChrColorType_vftable;
+	//sub_1400012E0((__int64)(a1 + 9), 4, 416, FUN_1402C9D70);
+	//v2 = (char*)a1 + 76;
+	//v3 = 52;
+	//do
+	//{
+	//	v2 += 0x20;
+	//	*((DWORD_PTR*)v2 - 9) = *(DWORD_PTR*)&"aYyyy"[4];
+	//	*((DWORD_PTR*)v2 - 8) = *(DWORD_PTR*)&"aYyyy"[4];
+	//	*((DWORD_PTR*)v2 - 7) = *(DWORD_PTR*)&"aYyyy"[4];
+	//	*((DWORD_PTR*)v2 - 6) = *(DWORD_PTR*)&"aYyyy"[4];
+	//	*((DWORD_PTR*)v2 - 5) = *(DWORD_PTR*)&"aYyyy"[4];
+	//	*((DWORD_PTR*)v2 - 4) = *(DWORD_PTR*)&"aYyyy"[4];
+	//	*((DWORD_PTR*)v2 - 3) = *(DWORD_PTR*)&"aYyyy"[4];
+	//	*((DWORD_PTR*)v2 - 2) = *(DWORD_PTR*)&"aYyyy"[4];
+	//	--v3;
+	//} while (v3);
+	//return a1;
 }
 
 
@@ -312,6 +539,7 @@ void OnInitializeHook()
 
 	short MSDValue = 2905;
 
+#pragma region ClassicCode
 	//First we unlock the Magneto Alt Costume.	
 	SingleProtectedWriteByte((moduleBase + 0x36577A), 1, 0xFF, oldPageProtection);
 
@@ -321,7 +549,7 @@ void OnInitializeHook()
 	SingleProtectedWriteByte(0x14036DAB0, 1, 0xFF, oldPageProtection);
 	SingleProtectedWriteByte(0x1403704DC, 1, ToggleColorCount, oldPageProtection);
 	SingleProtectedWriteByte(0x1403741D9, 1, 0xFF, oldPageProtection);
-	SingleProtectedWriteByte(0x14041AA18, 1, ToggleColorCount, oldPageProtection);
+	//SingleProtectedWriteByte(0x14041AA18, 1, ToggleColorCount, oldPageProtection);
 
 	if (UseIndividualColors == 0)
 	{
@@ -515,10 +743,10 @@ void OnInitializeHook()
 
 	//Originallly written by Eddie to ignore all test function and simply return the result of CalculateNewColorID. Modified.
 	BYTE ForSomeFunctionE[] =
-	{																				  0x83, 0xC8, 0xFF,
+	{ 0x83, 0xC8, 0xFF,
 		0xBA, 0x01, 0x00, 0x00, 0x00, 0x45, 0x84, 0xC9, 0x0F, 0x45, 0xD0, 0x44, 0x89, 0xC1, 0x45, 0x31,
-		0xC0, 0xEB, 0x1D, 0x90, 0x00, 0x00, 0x90, 0xE8, 0xE4, 0x94, 0x19, 0x00, 0xE9, 0xE2, 0x00, 0x00, 
-		0x00, 0xCC, 0xCC, 0xCC ,0xCC ,0xCC, 0xCC, 0xCC, 0xCC, 0xCC, 0xCC, 0xCC, 0xCC, 0xCC, 0xCC, 0xCC};
+		0xC0, 0xEB, 0x1D, 0x90, 0x00, 0x00, 0x90, 0xE8, 0xE4, 0x94, 0x19, 0x00, 0xE9, 0xE2, 0x00, 0x00,
+		0x00, 0xCC, 0xCC, 0xCC ,0xCC ,0xCC, 0xCC, 0xCC, 0xCC, 0xCC, 0xCC, 0xCC, 0xCC, 0xCC, 0xCC, 0xCC };
 	MultiProtectedWriteByteArray(0x1402BC1AD, 51, ForSomeFunctionE, oldPageProtection);
 
 	//Also written by Eddie for the sake of the numerical text. I believe this is actually the array of colors.
@@ -599,7 +827,7 @@ void OnInitializeHook()
 	MultiProtectedWriteByteArray(0x14024DBA0, 376, ForArcadeRandomRewrite, oldPageProtection);
 
 	//Thanks to Gneiss for his gift that showed me what to change and how.
-	BYTE ForTheScroller[] = 
+	BYTE ForTheScroller[] =
 	{ 0x51, 0x41, 0x8B, 0xCE, 0xE8, 0xC7, 0x27, 0xD6, 0xFF, 0xFF, 0xC8, 0x44, 0x8B, 0xC8, 0x59, 0xEB,
 	  0xD6, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0xC3, 0xCC, 0xCC, 0xCC };
 	MultiProtectedWriteByteArray(0x1402BC1E0, 32, ForTheScroller, oldPageProtection);
@@ -611,6 +839,7 @@ void OnInitializeHook()
 	};
 	MultiProtectedWriteByteArray(0x140B2A380, 27, ForColorOneHundred, oldPageProtection);
 
+#pragma endregion
 
 	//Sets up Trampoline Hook for the Scroller.
 	SingleProtectedWriteByte(0x1403704EA, 1, 0x90, oldPageProtection);
@@ -632,6 +861,30 @@ void OnInitializeHook()
 	MultiProtectedWriteByteArray(0x1402B9AD5, 21, NoppingTheRest, oldPageProtection);
 
 	InjectHook(_addr(0x1402B9AD0), tramp->Jump(FUN_1402B9AD0), PATCH_JUMP);
+
+	//License Board fixes.
+	BACKTOFUN_14041AA1B = moduleBase + 0x41AA1B;
+	
+	FUN_140058F90 = moduleBase + 0x58F90;
+	aUiChsChsFaceAC = moduleBase + 0xB02F40;
+	FUN_1404C4410 = moduleBase + 0x4C4410;
+	FUN_140001B10 = moduleBase + 0x1B10;
+	FUN_140455260 = moduleBase + 0x455260;
+	FUN_140151080 = moduleBase + 0x151080;
+	FUN_140E17570 = moduleBase + 0xE17570;
+	FUN_14001DCA0 = moduleBase + 0x1DCA0;
+	//InjectHook(_addr(0x14041A9A0), tramp->Jump(ForTheLicenseBoardPart1), PATCH_JUMP);
+
+	FUN_140321020 = moduleBase + 0x321020;
+	uChrColorType_vftable = moduleBase + 0xB3B050;
+	//uChrColorType_vftable = *((QWORD*)moduleBase + 0xB3B050);
+	FUN_1402C9D70 = moduleBase + 0x2C9D70;
+	FUN_1400012E0 = moduleBase + 0x12E0;
+	FUN_140D2AD20 = moduleBase + 0xD2AD20;
+	FUN_14035F770 = moduleBase + 0x35F770;
+
+	//InjectHook(_addr(0x14035FF7F), tramp->Jump(ForTheColorBorders), PATCH_JUMP);
+	//InjectHook(_addr(0x14035FF60), tramp->Jump(ForTheColorBorders_uChrColorTypeTypeInfo), PATCH_JUMP);
 
 
 	//For Taskmaster.
