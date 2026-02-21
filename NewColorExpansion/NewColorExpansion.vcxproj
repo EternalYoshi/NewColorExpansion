@@ -75,7 +75,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <OutDir>E:\ULTIMATE MARVEL VS. CAPCOM 3\Scripts\</OutDir>
+    <OutDir>E:\ULTIMATE MARVEL VS. CAPCOM 3\Scripts</OutDir>
     <IncludePath>$(DXSDK_DIR)Include;$(SolutionDir)Header Files\imgui;$(SolutionDir)include;$(IncludePath)</IncludePath>
     <LibraryPath>$(DXSDK_DIR)LIB\x64;$(DXSDK_DIR)LIB\x86;$(SolutionDir)lib\$(Configuration);$(LibraryPath)</LibraryPath>
   </PropertyGroup>
