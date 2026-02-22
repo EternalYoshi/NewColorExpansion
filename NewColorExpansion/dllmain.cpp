@@ -75,6 +75,18 @@ uint64_t MaybeByteHandler = 0x1400012E0;
 uint64_t SomeFunctionThatCallsTypeInfo = 0x14035F730;
 uint64_t SomeFunction = 0x14035F7E0;
 uint64_t YetAnotherFunction = 0x14050C900;
+
+uint64_t FUN_14024E300 = 0x14024E300;
+uint64_t FUN_1400046D0 = 0x1400046D0;
+uint64_t FUN_140146560 = 0x140146560;
+uint64_t FUN_14000AF80 = 0x14000AF80;
+uint64_t FUN_1401461E0 = 0x1401461E0;
+uint64_t FUN_140417C10 = 0x140417C10;
+uint64_t FUN_1406CD4E0 = 0x1406CD4E0;
+uint64_t FUN_1401CF670 = 0x1401CF670;
+uint64_t BuildStageSelectArray = 0x1402BC5D0;
+uint64_t getsGameUI = 0x140001AC0;
+
 //Gotta make arrays of strings for the characters. I think this is what the SDL uses to lookup the RGB values.
 #pragma region Char Arrays for uChrColorType
 
@@ -2220,17 +2232,6 @@ DWORD MultiProtectedWriteByteArray(DWORD64 AddressToWrite, int length, BYTE Byte
 
 #pragma endregion
 
-//int64 GetEntryPoint()
-//{
-//	static int64 addr = reinterpret_cast<int64>(GetModuleHandle(nullptr));
-//	return addr;
-//}
-//
-//int64 _addr(int64 addr)
-//{
-//	static int64 ImageBase = 0x140000000;
-//	return GetEntryPoint() - ImageBase + addr;
-//}
 
 DWORD_PTR ForTheCSSColorCounter_JmpBack = 0;
 //This is to ensure the color counter stays in sync on Character Select, regardless of whether or not it goes past 130.
@@ -2401,7 +2402,7 @@ __attribute__((naked)) void FUN_14035F730()
 		nop dword ptr[rax + 0x00]
 
 		LOC_14035F770: //label attempt borrowed from IDA. Does this iterate for 51 times to account for the whole roster...?
-			mov ecx, [DefaultRGBValue]//Seems to fill in 4 bytes with 0xFF000000, and this runs once for each color.
+		mov ecx, [DefaultRGBValue]//Seems to fill in 4 bytes with 0xFF000000, and this runs once for each color.
 			lea rax, [rax + 0x50]//Determines the endpoint for the writing.
 			//ea rax, [rax + 0x20] <- Original Code.
 
@@ -3158,11 +3159,11 @@ __attribute__((naked)) void OLD_14035F890()
 }
 
 //Have to remake this function because one of the commands is too big.
-__attribute__((naked)) void FUN_14035FF60() 
+__attribute__((naked)) void FUN_14035FF60()
 {
 	__asm
 	{
-	
+
 		sub rsp, 0x28
 		mov edx, 0x10
 		mov ecx, 0x1050
@@ -3173,7 +3174,7 @@ __attribute__((naked)) void FUN_14035FF60()
 		add rsp, 0x28
 		jmp FUN_14035F730
 
-		LOC_14035FF84:
+		LOC_14035FF84 :
 
 		add rsp, 0x28
 			ret
@@ -3204,6 +3205,145 @@ __attribute__((naked)) void OLD_14035FF60()
 
 
 	}
+}
+
+__attribute__((naked)) void ForAttractMode()
+{
+	__asm
+	{
+	
+		//Function that determines random colors.
+
+		mov[rsp + 0x08], rbx
+		mov[rsp + 0x10], rbp
+		mov[rsp + 0x18], rsi
+		push rdi
+		push r14
+		push r15
+		sub rsp, 0x20
+		mov r15, rcx
+		mov dword ptr[rcx + 0x44], 0x0000FFFF
+		mov dword ptr[rcx + 0x0000009C], 0x0000FFFF
+		mov dword ptr[rcx + 0x000000F4], 0x0000FFFF
+		mov dword ptr[rcx + 0x0000014C], 0x0000FFFF
+		mov dword ptr[rcx + 0x000001A4], 0x0000FFFF
+		mov dword ptr[rcx + 0x000001FC], 0x0000FFFF
+		call FUN_14024E300
+		call FUN_1400046D0
+		lea rsi, [r15 + 0x38]
+		mov r14, rax
+		lea rdi, [r15 + 0x000005B0]
+		mov rbx, rsi
+		mov ebp, 0x6
+
+		LOC_14024D804:
+
+		mov edx, [rdi]
+			mov rcx, rbx
+			call FUN_140146560
+			mov rcx, r14
+			call FUN_14000AF80
+			mov ecx, eax
+			//Original Code was here.
+			//mov eax, 0xAAAAAAAB
+			//mul ecx
+			//shr edx, 0x02
+			//lea eax, [rdx + rdx * 2]
+			//add eax, eax
+			//sub ecx, eax
+			//mov edx, ecx
+			
+			mov ecx, eax
+			mov eax, ecx
+			xor edx, edx
+			mov ecx, [RandomColorLimit]
+			div ecx
+
+			mov rcx, rbx
+			call FUN_1401461E0
+			add rbx, 0x58
+			lea rdi, [rdi + 0x04]
+			dec rbp
+			jne LOC_14024D804
+			xor r14d, r14d
+
+			LOC_14024D843 :
+
+		xor ebx, ebx
+
+			LOC_14024D845 :
+
+		cmp r14d, ebx
+			je LOC_14024D885
+			movsxd  rbp, ebx
+			lea rcx, [r15 + 0x38]
+			imul rbp, rbp, 0x58
+			add rcx, rbp
+			call FUN_140417C10
+			mov rcx, rsi
+			mov edi, eax
+			call FUN_140417C10
+			cmp eax, edi
+			jne LOC_14024D885
+			lea rcx, [r15 + 0x38]
+			add rcx, rbp
+			call FUN_1406CD4E0
+			mov rcx, rsi
+			mov edi, eax
+			call FUN_1406CD4E0
+			cmp eax, edi
+			je LOC_14024D88E
+
+			LOC_14024D885 :
+
+		inc ebx
+			cmp ebx, 0x06
+			jl LOC_14024D845
+			jmp LOC_14024D8AB
+
+			LOC_14024D88E :
+
+		mov rcx, rsi
+			call FUN_1406CD4E0
+			mov rcx, rsi
+			test eax, eax
+			je LOC_14024D8A1
+			xor edx, edx
+			jmp LOC_14024D8A6
+
+			LOC_14024D8A1 :
+
+		mov edx, 0x00000001
+
+			LOC_14024D8A6 :
+
+			call FUN_1401461E0
+
+			LOC_14024D8AB :
+
+		inc r14d
+			add rsi, 0x58
+			cmp r14d, 0x06
+			jl LOC_14024D843
+			call getsGameUI
+			mov edx, 0x00000013
+			mov rcx, rax
+			call BuildStageSelectArray//0x1402BC5D0
+			mov rcx, r15
+			mov edx, eax
+			mov rbx, [rsp + 0x40]
+			mov rbp, [rsp + 0x48]
+			mov rsi, [rsp + 0x50]
+			add rsp, 0x20
+			pop r15
+			pop r14
+			pop rdi
+			jmp FUN_1401CF670
+
+
+	}
+
+
 }
 
 void OnInitializeHook()
@@ -3540,7 +3680,7 @@ void OnInitializeHook()
 	TCCForScroller = ToggleColorCount - 1;
 	Trampoline* tramp = Trampoline::MakeTrampoline(GetModuleHandle(nullptr));
 	InjectHook(_addr(0x1403704E5), tramp->Jump(ForTheCSSColorCounter_Hook), PATCH_JUMP);
-
+	
 	Fun_1402B9AE2 = moduleBase + 0x2B9AE2;
 	TCCForComparison = ToggleColorCount;
 	BYTE NoppingTheRest[] =
@@ -3635,14 +3775,12 @@ void OnInitializeHook()
 
 #pragma endregion
 
-
+	//For attract mode.
+	InjectHook(_addr(0x14024E277), tramp->Jump(ForAttractMode), PATCH_CALL);
 
 }
 
-BOOL APIENTRY DllMain(HMODULE hModule,
-	DWORD  ul_reason_for_call,
-	LPVOID lpReserved
-)
+BOOL APIENTRY DllMain(HMODULE hModule, DWORD ul_reason_for_call, LPVOID lpReserved)
 {
 	switch (ul_reason_for_call)
 	{
