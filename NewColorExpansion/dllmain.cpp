@@ -87,6 +87,39 @@ uint64_t FUN_1401CF670 = 0x1401CF670;
 uint64_t BuildStageSelectArray = 0x1402BC5D0;
 uint64_t getsGameUI = 0x140001AC0;
 
+uint64_t CharacterColorLimitArray = 0; //Before 2026, it starts at 0x140A6F9F0.
+uint64_t MagAltBlockPtr = 0;//Originally 0x14036577A;
+uint64_t ForColor9UIA = 0;//Originally 0x140057896 -> 0x1400578A4. Need to offset by 0xE.
+uint64_t ForColor9UIB = 0;//Originally 0x14036DAA3 -> 0x14036DAB0. Need to offset by 0xD.
+uint64_t ForColor9UIC = 0;//Originally 0x1403704D3 -> 0x1403704DC. Need to offset by 0x9.
+uint64_t ForColor9UID = 0;//Originally 0x1403741C9 -> 0x1403741D9. Need to offset by 0x10.
+uint64_t ForCHSValueBorder = 0;
+uint64_t ForMSDIndicesA = 0;//Originally 0x140420300. Offset by 0xC.
+uint64_t ForMSDIndicesB = 0;
+uint64_t ForMSDIndicesC = 0;
+uint64_t ForMSDIndicesD = 0;
+uint64_t ColorBorderDefeat = 0;
+//uint64_t ForMSDIndicesE = 0;
+
+size_t ProjectedModuleSize = 0xEBB000;
+
+#pragma region AOB strings
+//The first part of the pattern. This should definitely ONLY match the first part of this array.
+const char* DefaultCharacterColorLimitArrayPattern = "01 00 00 00 08 00 00 00 08 00 00 00 09 00 00 00 08 00 00 00 09 00 00 00 08 00 00 00 08 00 00 00 08 00 00 00 08 00 00 00 08 00 00 00 08 00 00 00 08 00 00 00 08 00 00 00 08 00 00 00 08 00 00 00";
+const char* AOBMagnetoAltBlock = "83 FB 1D ?? ?? 83 BC BE ?? ?? ?? ?? 07 ?? ?? 44 89 A4 BE ?? ?? ?? 00";
+const char* AOBForColor9UIA = "48 89 74 24 58 41 8B B6 ?? ?? ?? ?? 83 FE 08";
+const char* AOBForColor9UIB = "4C 8B C0 44 8B CB E8 ?? ?? ?? ?? 83 FB 08";
+const char* AOBForColor9UIC = "83 F8 02 41 0F 44 DC 41 B9 08 00 00 00 45 33 C0 8B CB 41 8D 51 F9 E8 ?? ?? ?? ??";
+const char* AOBForColor9UID = "48 8D 4C 24 40 4C 8B C0 E8 ?? ?? ?? ?? 83 7E ?? 08 74 ?? 48 8B 4E ?? 48 85 C9";
+const char* AOBForMSDIndicesA = "8B 43 ?? 48 8B 4F ?? 83 F8 06 8D 90 E1 00 00 00 41 0F 44 D4 83 F8 07 41 0F 44 D5";
+const char* AOBForMSDIndicesB = "C7 87 ?? ?? ?? ?? 00 00 00 00 8B 87 ?? ?? ?? ?? B9 ?? ?? ?? ?? 83 F8 06 8D 90 E1 00 00 00 0F 44 D1 B9 ?? ?? ?? ??";
+const char* AOBForMSDIndicesC = "48 8B 03 FF 90 ?? ?? ?? ?? 8B 83 ?? ?? ?? ?? B9 ?? ?? 00 00 83 F8 06 8D 90 E1 00 00 00 0F 44 D1 B9 ?? ?? 00 00 83 F8 07 0F 44 D1";
+const char* AOBForMSDIndicesD = "48 8B 9C 24 ?? ?? ?? ?? 49 8D 0C 3C 41 8B 04 8F B9 ?? ?? ?? ?? 83 F8 06 8D 90 E1 00 00 00 0F 44 D1 83 F8 07 B8 ?? ?? ?? ?? 48 8D 0C 1F 0F 44 D0 49 8B 4C CE ??";
+const char* AOBForUnconditionalJump = "";
+
+
+#pragma endregion
+
 //Gotta make arrays of strings for the characters. I think this is what the SDL uses to lookup the RGB values.
 #pragma region Char Arrays for uChrColorType
 
@@ -2152,7 +2185,7 @@ bool CheckGame()
 	}
 	else
 	{
-		MessageBoxA(0, "Sorry!\nColor Expansion only supports the most recent(or the version released from April 2017 onward) Steam Executable of Ultimate Marvel vs Capcom 3.", 0, MB_ICONINFORMATION);
+		MessageBoxA(0, "Sorry!\nColor Expansion only supports the most recent(or the version released from April 2017 - Somewhere in 2026) Steam Executable of Ultimate Marvel vs Capcom 3.", 0, MB_ICONINFORMATION);
 		return false;
 	}
 }
@@ -2232,6 +2265,118 @@ DWORD MultiProtectedWriteByteArray(DWORD64 AddressToWrite, int length, BYTE Byte
 
 #pragma endregion
 
+//Originally based on HeathHowren's PatterScanning function. Adjusted to better suit the target game, which is x64.
+
+static inline uint8_t ReadHexNibble(char c) {
+	if (c >= '0' && c <= '9') 
+	{
+		return c - '0';
+	}
+	c &= ~0x20;
+	if (c >= 'A' && c <= 'F') 
+	{
+		return c - 'A' + 0xA;
+	}
+	return 0;
+}
+
+static inline bool ParseNextCharacter(const char*& pat, uint8_t& outByte) {
+	
+	//Skip leading spaces.
+	while (*pat == ' ') ++pat;
+
+	if (!*pat) 
+	{
+		//The pattern's end.
+		return false;
+	}
+
+	bool wild = (pat[0] == '?');
+
+	if (!wild) 
+	{
+		outByte = (ReadHexNibble(pat[0]) << 4) | ReadHexNibble(pat[1]);
+	}
+
+	//Advances a character and past any trailing spaces.
+	if (pat[0] == '?' && pat[1] != '?' && pat[1] != ' ' && pat[1] != '\0')
+	{
+		pat += 1;
+	}
+	else if (pat[0] == '?' && (pat[1] == '?'))
+	{
+		pat += 2;
+	}
+	else if (pat[0] == '?')
+	{
+		pat += 1;
+	}
+	else
+	{
+		pat += 2;
+	}
+
+	while (*pat == ' ') 
+	{
+		//Skip whatever trailing spaces remain.
+		++pat;
+	}
+	return wild;
+}
+
+uint64_t FindBytePattern(uint64_t baseAddr, size_t ScanSize, const char* DataPattern) 
+{
+	//Some checking of validity.
+	if (baseAddr <= 0 || ScanSize <= 0 || !DataPattern)
+	{
+		return 0;
+	}
+
+	const char* CPattern = DataPattern;
+	uint64_t    FirstMatchLocation = 0;
+
+	for (uint64_t pCur = baseAddr; pCur < (baseAddr + ScanSize); ++pCur)
+	{
+		while (*CPattern == ' ')
+		{
+			++CPattern;
+		}
+		if (!*CPattern)
+		{
+			break;
+		}
+
+		uint8_t    patByte = 0;
+		const char* patSave = CPattern;
+		bool wild = ParseNextCharacter(CPattern, patByte);
+		uint8_t curByte = *reinterpret_cast<uint8_t*>(pCur);
+
+		if (wild || curByte == patByte) 
+		{
+			if (!FirstMatchLocation) FirstMatchLocation = pCur;
+			{
+				if (!*CPattern) 
+				{
+					break;
+				}
+			}
+		}
+		else {
+			//Resets on mismatch.
+			CPattern = DataPattern;
+			FirstMatchLocation = 0;
+		}
+	}
+
+
+	if (!FirstMatchLocation) 
+	{ 
+		return 0; 
+	}
+
+	return FirstMatchLocation;
+
+}
 
 DWORD_PTR ForTheCSSColorCounter_JmpBack = 0;
 //This is to ensure the color counter stays in sync on Character Select, regardless of whether or not it goes past 130.
@@ -3368,200 +3513,148 @@ void OnInitializeHook()
 
 	short MSDValue = 2905;
 
-#pragma region ClassicCode
+#pragma region ClassicCode - AOB Edition
 	//First we unlock the Magneto Alt Costume.	
-	SingleProtectedWriteByte((moduleBase + 0x36577A), 1, 0xFF, oldPageProtection);
+	uint64_t MagAltBlockPtr = 0x2 + FindBytePattern(moduleBase, ProjectedModuleSize, AOBMagnetoAltBlock);
+	SingleProtectedWriteByte((MagAltBlockPtr), 1, 0xFF, oldPageProtection);
 
 	//Next we update the color limits that house the exact value and unlock slot 9.
-	SingleProtectedWriteByte((moduleBase + 0x578A4), 1, 0xFF, oldPageProtection);
-	SingleProtectedWriteByte(0x1402B9AD5, 1, ToggleColorCount, oldPageProtection);
-	SingleProtectedWriteByte(0x14036DAB0, 1, 0xFF, oldPageProtection);
-	SingleProtectedWriteByte(0x1403704DC, 1, ToggleColorCount, oldPageProtection);
-	SingleProtectedWriteByte(0x1403741D9, 1, 0xFF, oldPageProtection);
+	ForColor9UIA = 0xE + FindBytePattern(moduleBase, ProjectedModuleSize, AOBForColor9UIA);
+	SingleProtectedWriteByte((ForColor9UIA), 1, 0xFF, oldPageProtection);
+
+	ForColor9UIB = 0xD + FindBytePattern(moduleBase, ProjectedModuleSize, AOBForColor9UIB);
+	SingleProtectedWriteByte((ForColor9UIB), 1, 0xFF, oldPageProtection);
+
+	ForColor9UIC = 0x9 + FindBytePattern(moduleBase, ProjectedModuleSize, AOBForColor9UIC);
+	SingleProtectedWriteByte(ForColor9UIC, 1, ToggleColorCount, oldPageProtection);
+
+	ForColor9UID = 0x10 + FindBytePattern(moduleBase, ProjectedModuleSize, AOBForColor9UID);
+	SingleProtectedWriteByte(ForColor9UID, 1, 0xFF, oldPageProtection);
+
 	//SingleProtectedWriteByte(0x14041AA18, 1, ToggleColorCount, oldPageProtection);
+
+	CharacterColorLimitArray = 0x4 + FindBytePattern(moduleBase, ProjectedModuleSize, DefaultCharacterColorLimitArrayPattern);
+	uint64_t CharColorLimitPtr = CharacterColorLimitArray;
 
 	if (UseIndividualColors == 0)
 	{
 		//Now for the characters. Galactus' color limit stays as is.
-		SingleProtectedWriteByte(0x140A6F9F4, 1, ToggleColorCount, oldPageProtection);
-		SingleProtectedWriteByte(0x140A6F9F8, 1, ToggleColorCount, oldPageProtection);
-		SingleProtectedWriteByte(0x140A6F9FC, 1, ToggleColorCount, oldPageProtection);
+		for (int v = 0; v < 50; v++)
+		{
+			SingleProtectedWriteByte(CharColorLimitPtr, 1, ToggleColorCount, oldPageProtection);
+			CharColorLimitPtr = CharColorLimitPtr + 4;
+		}
 
-		SingleProtectedWriteByte(0x140A6FA00, 1, ToggleColorCount, oldPageProtection);
-		SingleProtectedWriteByte(0x140A6FA04, 1, ToggleColorCount, oldPageProtection);
-		SingleProtectedWriteByte(0x140A6FA08, 1, ToggleColorCount, oldPageProtection);
-		SingleProtectedWriteByte(0x140A6FA0C, 1, ToggleColorCount, oldPageProtection);
-
-		SingleProtectedWriteByte(0x140A6FA10, 1, ToggleColorCount, oldPageProtection);
-		SingleProtectedWriteByte(0x140A6FA14, 1, ToggleColorCount, oldPageProtection);
-		SingleProtectedWriteByte(0x140A6FA18, 1, ToggleColorCount, oldPageProtection);
-		SingleProtectedWriteByte(0x140A6FA1C, 1, ToggleColorCount, oldPageProtection);
-
-		SingleProtectedWriteByte(0x140A6FA20, 1, ToggleColorCount, oldPageProtection);
-		SingleProtectedWriteByte(0x140A6FA24, 1, ToggleColorCount, oldPageProtection);
-		SingleProtectedWriteByte(0x140A6FA28, 1, ToggleColorCount, oldPageProtection);
-		SingleProtectedWriteByte(0x140A6FA2C, 1, ToggleColorCount, oldPageProtection);
-
-		SingleProtectedWriteByte(0x140A6FA30, 1, ToggleColorCount, oldPageProtection);
-		SingleProtectedWriteByte(0x140A6FA34, 1, ToggleColorCount, oldPageProtection);
-		SingleProtectedWriteByte(0x140A6FA38, 1, ToggleColorCount, oldPageProtection);
-		SingleProtectedWriteByte(0x140A6FA3C, 1, ToggleColorCount, oldPageProtection);
-
-		SingleProtectedWriteByte(0x140A6FA40, 1, ToggleColorCount, oldPageProtection);
-		SingleProtectedWriteByte(0x140A6FA44, 1, ToggleColorCount, oldPageProtection);
-		SingleProtectedWriteByte(0x140A6FA48, 1, ToggleColorCount, oldPageProtection);
-		SingleProtectedWriteByte(0x140A6FA4C, 1, ToggleColorCount, oldPageProtection);
-
-		SingleProtectedWriteByte(0x140A6FA50, 1, ToggleColorCount, oldPageProtection);
-		SingleProtectedWriteByte(0x140A6FA54, 1, ToggleColorCount, oldPageProtection);
-		SingleProtectedWriteByte(0x140A6FA58, 1, ToggleColorCount, oldPageProtection);
-		SingleProtectedWriteByte(0x140A6FA5C, 1, ToggleColorCount, oldPageProtection);
-
-		SingleProtectedWriteByte(0x140A6FA60, 1, ToggleColorCount, oldPageProtection);
-		SingleProtectedWriteByte(0x140A6FA64, 1, ToggleColorCount, oldPageProtection);
-		SingleProtectedWriteByte(0x140A6FA68, 1, ToggleColorCount, oldPageProtection);
-		SingleProtectedWriteByte(0x140A6FA6C, 1, ToggleColorCount, oldPageProtection);
-
-		SingleProtectedWriteByte(0x140A6FA70, 1, ToggleColorCount, oldPageProtection);
-		SingleProtectedWriteByte(0x140A6FA74, 1, ToggleColorCount, oldPageProtection);
-		SingleProtectedWriteByte(0x140A6FA78, 1, ToggleColorCount, oldPageProtection);
-		SingleProtectedWriteByte(0x140A6FA7C, 1, ToggleColorCount, oldPageProtection);
-
-		SingleProtectedWriteByte(0x140A6FA80, 1, ToggleColorCount, oldPageProtection);
-		SingleProtectedWriteByte(0x140A6FA84, 1, ToggleColorCount, oldPageProtection);
-		SingleProtectedWriteByte(0x140A6FA88, 1, ToggleColorCount, oldPageProtection);
-		SingleProtectedWriteByte(0x140A6FA8C, 1, ToggleColorCount, oldPageProtection);
-
-		SingleProtectedWriteByte(0x140A6FA90, 1, ToggleColorCount, oldPageProtection);
-		SingleProtectedWriteByte(0x140A6FA94, 1, ToggleColorCount, oldPageProtection);
-		SingleProtectedWriteByte(0x140A6FA98, 1, ToggleColorCount, oldPageProtection);
-		SingleProtectedWriteByte(0x140A6FA9C, 1, ToggleColorCount, oldPageProtection);
-
-		SingleProtectedWriteByte(0x140A6FAA0, 1, ToggleColorCount, oldPageProtection);
-		SingleProtectedWriteByte(0x140A6FAA4, 1, ToggleColorCount, oldPageProtection);
-		SingleProtectedWriteByte(0x140A6FAA8, 1, ToggleColorCount, oldPageProtection);
-		SingleProtectedWriteByte(0x140A6FAAC, 1, ToggleColorCount, oldPageProtection);
-
-		SingleProtectedWriteByte(0x140A6FAB0, 1, ToggleColorCount, oldPageProtection);
-		SingleProtectedWriteByte(0x140A6FAB4, 1, ToggleColorCount, oldPageProtection);
-		SingleProtectedWriteByte(0x140A6FAB8, 1, ToggleColorCount, oldPageProtection);
+		//Skipping Galactus.
+		CharColorLimitPtr = CharColorLimitPtr + 4;
 
 		//These last 8 are for the child characters. They gotta be updated along with the host characters.
-		SingleProtectedWriteByte(0x140A6FAC0, 1, ToggleColorCount, oldPageProtection);
-		SingleProtectedWriteByte(0x140A6FAC4, 1, ToggleColorCount, oldPageProtection);
-		SingleProtectedWriteByte(0x140A6FAC8, 1, ToggleColorCount, oldPageProtection);
-		SingleProtectedWriteByte(0x140A6FACC, 1, ToggleColorCount, oldPageProtection);
-
-		SingleProtectedWriteByte(0x140A6FAD0, 1, ToggleColorCount, oldPageProtection);
-		SingleProtectedWriteByte(0x140A6FAD4, 1, ToggleColorCount, oldPageProtection);
-		SingleProtectedWriteByte(0x140A6FAD8, 1, ToggleColorCount, oldPageProtection);
-		SingleProtectedWriteByte(0x140A6FADC, 1, ToggleColorCount, oldPageProtection);
-
+		for (int v = 0; v < 8; v++)
+		{
+			SingleProtectedWriteByte(CharColorLimitPtr, 1, ToggleColorCount, oldPageProtection);
+			CharColorLimitPtr = CharColorLimitPtr + 4;
+		}
 	}
 	else
 	{
-		//Now for the characters controlled by the individual character settings in the ini. Galactus' color limit stays as is.
 		CIniReader ini;
-		SingleProtectedWriteByte(0x140A6F9F4, 1, ini.ReadInteger("Settings", "ColorLimitRyu", VK_SPACE), oldPageProtection);
-		SingleProtectedWriteByte(0x140A6F9F8, 1, ini.ReadInteger("Settings", "ColorLimitChunLi", VK_SPACE), oldPageProtection);
-		SingleProtectedWriteByte(0x140A6F9FC, 1, ini.ReadInteger("Settings", "ColorLimitAkuma", VK_SPACE), oldPageProtection);
+		SingleProtectedWriteByte(CharColorLimitPtr, 1, ini.ReadInteger("Settings", "ColorLimitRyu", VK_SPACE), oldPageProtection);
+		SingleProtectedWriteByte((CharColorLimitPtr + 0x4), 1, ini.ReadInteger("Settings", "ColorLimitChunLi", VK_SPACE), oldPageProtection);
+		SingleProtectedWriteByte((CharColorLimitPtr + 0x8), 1, ini.ReadInteger("Settings", "ColorLimitAkuma", VK_SPACE), oldPageProtection);
 
-		SingleProtectedWriteByte(0x140A6FA00, 1, ini.ReadInteger("Settings", "ColorLimitChris", VK_SPACE), oldPageProtection);
-		SingleProtectedWriteByte(0x140A6FA04, 1, ini.ReadInteger("Settings", "ColorLimitWesker", VK_SPACE), oldPageProtection);
-		SingleProtectedWriteByte(0x140A6FA08, 1, ini.ReadInteger("Settings", "ColorLimitVJoe", VK_SPACE), oldPageProtection);
-		SingleProtectedWriteByte(0x140A6FA0C, 1, ini.ReadInteger("Settings", "ColorLimitDante", VK_SPACE), oldPageProtection);
+		SingleProtectedWriteByte((CharColorLimitPtr + 0xC), 1, ini.ReadInteger("Settings", "ColorLimitChris", VK_SPACE), oldPageProtection);
+		SingleProtectedWriteByte((CharColorLimitPtr + 0x10), 1, ini.ReadInteger("Settings", "ColorLimitWesker", VK_SPACE), oldPageProtection);
+		SingleProtectedWriteByte((CharColorLimitPtr + 0x14), 1, ini.ReadInteger("Settings", "ColorLimitVJoe", VK_SPACE), oldPageProtection);
+		SingleProtectedWriteByte((CharColorLimitPtr + 0x18), 1, ini.ReadInteger("Settings", "ColorLimitDante", VK_SPACE), oldPageProtection);
 
-		SingleProtectedWriteByte(0x140A6FA10, 1, ini.ReadInteger("Settings", "ColorLimitTrish", VK_SPACE), oldPageProtection);
-		SingleProtectedWriteByte(0x140A6FA14, 1, ini.ReadInteger("Settings", "ColorLimitFrank", VK_SPACE), oldPageProtection);
-		SingleProtectedWriteByte(0x140A6FA18, 1, ini.ReadInteger("Settings", "ColorLimitSpencer", VK_SPACE), oldPageProtection);
-		SingleProtectedWriteByte(0x140A6FA1C, 1, ini.ReadInteger("Settings", "ColorLimitArthur", VK_SPACE), oldPageProtection);
+		SingleProtectedWriteByte((CharColorLimitPtr + 0x1C), 1, ini.ReadInteger("Settings", "ColorLimitTrish", VK_SPACE), oldPageProtection);
+		SingleProtectedWriteByte((CharColorLimitPtr + 0x20), 1, ini.ReadInteger("Settings", "ColorLimitFrank", VK_SPACE), oldPageProtection);
+		SingleProtectedWriteByte((CharColorLimitPtr + 0x24), 1, ini.ReadInteger("Settings", "ColorLimitSpencer", VK_SPACE), oldPageProtection);
+		SingleProtectedWriteByte((CharColorLimitPtr + 0x28), 1, ini.ReadInteger("Settings", "ColorLimitArthur", VK_SPACE), oldPageProtection);
 
-		SingleProtectedWriteByte(0x140A6FA20, 1, ini.ReadInteger("Settings", "ColorLimitAmmy", VK_SPACE), oldPageProtection);
-		SingleProtectedWriteByte(0x140A6FA24, 1, ini.ReadInteger("Settings", "ColorLimitZero", VK_SPACE), oldPageProtection);
-		SingleProtectedWriteByte(0x140A6FA28, 1, ini.ReadInteger("Settings", "ColorLimitTron", VK_SPACE), oldPageProtection);
-		SingleProtectedWriteByte(0x140A6FA2C, 1, ini.ReadInteger("Settings", "ColorLimitMorrigan", VK_SPACE), oldPageProtection);
+		SingleProtectedWriteByte((CharColorLimitPtr + 0x2C), 1, ini.ReadInteger("Settings", "ColorLimitAmmy", VK_SPACE), oldPageProtection);
+		SingleProtectedWriteByte((CharColorLimitPtr + 0x30), 1, ini.ReadInteger("Settings", "ColorLimitZero", VK_SPACE), oldPageProtection);
+		SingleProtectedWriteByte((CharColorLimitPtr + 0x34), 1, ini.ReadInteger("Settings", "ColorLimitTron", VK_SPACE), oldPageProtection);
+		SingleProtectedWriteByte((CharColorLimitPtr + 0x38), 1, ini.ReadInteger("Settings", "ColorLimitMorrigan", VK_SPACE), oldPageProtection);
 
-		SingleProtectedWriteByte(0x140A6FA30, 1, ini.ReadInteger("Settings", "ColorLimitHsienKo", VK_SPACE), oldPageProtection);
-		SingleProtectedWriteByte(0x140A6FA34, 1, ini.ReadInteger("Settings", "ColorLimitFelciia", VK_SPACE), oldPageProtection);
-		SingleProtectedWriteByte(0x140A6FA38, 1, ini.ReadInteger("Settings", "ColorLimitCViper", VK_SPACE), oldPageProtection);
-		SingleProtectedWriteByte(0x140A6FA3C, 1, ini.ReadInteger("Settings", "ColorLimitHaggar", VK_SPACE), oldPageProtection);
+		SingleProtectedWriteByte((CharColorLimitPtr + 0x3C), 1, ini.ReadInteger("Settings", "ColorLimitHsienKo", VK_SPACE), oldPageProtection);
+		SingleProtectedWriteByte((CharColorLimitPtr + 0x40), 1, ini.ReadInteger("Settings", "ColorLimitFelciia", VK_SPACE), oldPageProtection);
+		SingleProtectedWriteByte((CharColorLimitPtr + 0x44), 1, ini.ReadInteger("Settings", "ColorLimitCViper", VK_SPACE), oldPageProtection);
+		SingleProtectedWriteByte((CharColorLimitPtr + 0x48), 1, ini.ReadInteger("Settings", "ColorLimitHaggar", VK_SPACE), oldPageProtection);
 
-		SingleProtectedWriteByte(0x140A6FA40, 1, ini.ReadInteger("Settings", "ColorLimitJill", VK_SPACE), oldPageProtection);
-		SingleProtectedWriteByte(0x140A6FA44, 1, ini.ReadInteger("Settings", "ColorLimitStrider", VK_SPACE), oldPageProtection);
-		SingleProtectedWriteByte(0x140A6FA48, 1, ini.ReadInteger("Settings", "ColorLimitVergil", VK_SPACE), oldPageProtection);
-		SingleProtectedWriteByte(0x140A6FA4C, 1, ini.ReadInteger("Settings", "ColorLimitMrWright", VK_SPACE), oldPageProtection);
+		SingleProtectedWriteByte((CharColorLimitPtr + 0x4C), 1, ini.ReadInteger("Settings", "ColorLimitJill", VK_SPACE), oldPageProtection);
+		SingleProtectedWriteByte((CharColorLimitPtr + 0x50), 1, ini.ReadInteger("Settings", "ColorLimitStrider", VK_SPACE), oldPageProtection);
+		SingleProtectedWriteByte((CharColorLimitPtr + 0x54), 1, ini.ReadInteger("Settings", "ColorLimitVergil", VK_SPACE), oldPageProtection);
+		SingleProtectedWriteByte((CharColorLimitPtr + 0x58), 1, ini.ReadInteger("Settings", "ColorLimitMrWright", VK_SPACE), oldPageProtection);
 
-		SingleProtectedWriteByte(0x140A6FA50, 1, ini.ReadInteger("Settings", "ColorLimitFirebrand", VK_SPACE), oldPageProtection);
-		SingleProtectedWriteByte(0x140A6FA54, 1, ini.ReadInteger("Settings", "ColorLimitNemesis", VK_SPACE), oldPageProtection);
-		SingleProtectedWriteByte(0x140A6FA58, 1, ini.ReadInteger("Settings", "ColorLimitSpiderMan", VK_SPACE), oldPageProtection);
-		SingleProtectedWriteByte(0x140A6FA5C, 1, ini.ReadInteger("Settings", "ColorLimitCap", VK_SPACE), oldPageProtection);
+		SingleProtectedWriteByte((CharColorLimitPtr + 0x5C), 1, ini.ReadInteger("Settings", "ColorLimitFirebrand", VK_SPACE), oldPageProtection);
+		SingleProtectedWriteByte((CharColorLimitPtr + 0x60), 1, ini.ReadInteger("Settings", "ColorLimitNemesis", VK_SPACE), oldPageProtection);
+		SingleProtectedWriteByte((CharColorLimitPtr + 0x64), 1, ini.ReadInteger("Settings", "ColorLimitSpiderMan", VK_SPACE), oldPageProtection);
+		SingleProtectedWriteByte((CharColorLimitPtr + 0x68), 1, ini.ReadInteger("Settings", "ColorLimitCap", VK_SPACE), oldPageProtection);
 
-		SingleProtectedWriteByte(0x140A6FA60, 1, ini.ReadInteger("Settings", "ColorLimitWolverine", VK_SPACE), oldPageProtection);
-		SingleProtectedWriteByte(0x140A6FA64, 1, ini.ReadInteger("Settings", "ColorLimitMagneto", VK_SPACE), oldPageProtection);
-		SingleProtectedWriteByte(0x140A6FA68, 1, ini.ReadInteger("Settings", "ColorLimitHulk", VK_SPACE), oldPageProtection);
-		SingleProtectedWriteByte(0x140A6FA6C, 1, ini.ReadInteger("Settings", "ColorLimitSheHulk", VK_SPACE), oldPageProtection);
+		SingleProtectedWriteByte((CharColorLimitPtr + 0x6C), 1, ini.ReadInteger("Settings", "ColorLimitWolverine", VK_SPACE), oldPageProtection);
+		SingleProtectedWriteByte((CharColorLimitPtr + 0x70), 1, ini.ReadInteger("Settings", "ColorLimitMagneto", VK_SPACE), oldPageProtection);
+		SingleProtectedWriteByte((CharColorLimitPtr + 0x74), 1, ini.ReadInteger("Settings", "ColorLimitHulk", VK_SPACE), oldPageProtection);
+		SingleProtectedWriteByte((CharColorLimitPtr + 0x78), 1, ini.ReadInteger("Settings", "ColorLimitSheHulk", VK_SPACE), oldPageProtection);
 
-		SingleProtectedWriteByte(0x140A6FA70, 1, ini.ReadInteger("Settings", "ColorLimitTaskmaster", VK_SPACE), oldPageProtection);
-		SingleProtectedWriteByte(0x140A6FA74, 1, ini.ReadInteger("Settings", "ColorLimitIronMan", VK_SPACE), oldPageProtection);
-		SingleProtectedWriteByte(0x140A6FA78, 1, ini.ReadInteger("Settings", "ColorLimitThor", VK_SPACE), oldPageProtection);
-		SingleProtectedWriteByte(0x140A6FA7C, 1, ini.ReadInteger("Settings", "ColorLimitDoom", VK_SPACE), oldPageProtection);
+		SingleProtectedWriteByte((CharColorLimitPtr + 0x7C), 1, ini.ReadInteger("Settings", "ColorLimitTaskmaster", VK_SPACE), oldPageProtection);
+		SingleProtectedWriteByte((CharColorLimitPtr + 0x80), 1, ini.ReadInteger("Settings", "ColorLimitIronMan", VK_SPACE), oldPageProtection);
+		SingleProtectedWriteByte((CharColorLimitPtr + 0x84), 1, ini.ReadInteger("Settings", "ColorLimitThor", VK_SPACE), oldPageProtection);
+		SingleProtectedWriteByte((CharColorLimitPtr + 0x88), 1, ini.ReadInteger("Settings", "ColorLimitDoom", VK_SPACE), oldPageProtection);
 
-		SingleProtectedWriteByte(0x140A6FA80, 1, ini.ReadInteger("Settings", "ColorLimitJean", VK_SPACE), oldPageProtection);
-		SingleProtectedWriteByte(0x140A6FA84, 1, ini.ReadInteger("Settings", "ColorLimitShuma", VK_SPACE), oldPageProtection);
-		SingleProtectedWriteByte(0x140A6FA88, 1, ini.ReadInteger("Settings", "ColorLimitMODOK", VK_SPACE), oldPageProtection);
-		SingleProtectedWriteByte(0x140A6FA8C, 1, ini.ReadInteger("Settings", "ColorLimitDormammu", VK_SPACE), oldPageProtection);
+		SingleProtectedWriteByte((CharColorLimitPtr + 0x8C), 1, ini.ReadInteger("Settings", "ColorLimitJean", VK_SPACE), oldPageProtection);
+		SingleProtectedWriteByte((CharColorLimitPtr + 0x90), 1, ini.ReadInteger("Settings", "ColorLimitShuma", VK_SPACE), oldPageProtection);
+		SingleProtectedWriteByte((CharColorLimitPtr + 0x94), 1, ini.ReadInteger("Settings", "ColorLimitMODOK", VK_SPACE), oldPageProtection);
+		SingleProtectedWriteByte((CharColorLimitPtr + 0x98), 1, ini.ReadInteger("Settings", "ColorLimitDormammu", VK_SPACE), oldPageProtection);
 
-		SingleProtectedWriteByte(0x140A6FA90, 1, ini.ReadInteger("Settings", "ColorLimitDeadpool", VK_SPACE), oldPageProtection);
-		SingleProtectedWriteByte(0x140A6FA94, 1, ini.ReadInteger("Settings", "ColorLimitStorm", VK_SPACE), oldPageProtection);
-		SingleProtectedWriteByte(0x140A6FA98, 1, ini.ReadInteger("Settings", "ColorLimitSkrull", VK_SPACE), oldPageProtection);
-		SingleProtectedWriteByte(0x140A6FA9C, 1, ini.ReadInteger("Settings", "ColorLimitSentinel", VK_SPACE), oldPageProtection);
+		SingleProtectedWriteByte((CharColorLimitPtr + 0x9C), 1, ini.ReadInteger("Settings", "ColorLimitDeadpool", VK_SPACE), oldPageProtection);
+		SingleProtectedWriteByte((CharColorLimitPtr + 0xA0), 1, ini.ReadInteger("Settings", "ColorLimitStorm", VK_SPACE), oldPageProtection);
+		SingleProtectedWriteByte((CharColorLimitPtr + 0xA4), 1, ini.ReadInteger("Settings", "ColorLimitSkrull", VK_SPACE), oldPageProtection);
+		SingleProtectedWriteByte((CharColorLimitPtr + 0xA8), 1, ini.ReadInteger("Settings", "ColorLimitSentinel", VK_SPACE), oldPageProtection);
 
-		SingleProtectedWriteByte(0x140A6FAA0, 1, ini.ReadInteger("Settings", "ColorLimitX23", VK_SPACE), oldPageProtection);
-		SingleProtectedWriteByte(0x140A6FAA4, 1, ini.ReadInteger("Settings", "ColorLimitNova", VK_SPACE), oldPageProtection);
-		SingleProtectedWriteByte(0x140A6FAA8, 1, ini.ReadInteger("Settings", "ColorLimitRR", VK_SPACE), oldPageProtection);
-		SingleProtectedWriteByte(0x140A6FAAC, 1, ini.ReadInteger("Settings", "ColorLimitGhostRider", VK_SPACE), oldPageProtection);
+		SingleProtectedWriteByte((CharColorLimitPtr + 0xAC), 1, ini.ReadInteger("Settings", "ColorLimitX23", VK_SPACE), oldPageProtection);
+		SingleProtectedWriteByte((CharColorLimitPtr + 0xB0), 1, ini.ReadInteger("Settings", "ColorLimitNova", VK_SPACE), oldPageProtection);
+		SingleProtectedWriteByte((CharColorLimitPtr + 0xB4), 1, ini.ReadInteger("Settings", "ColorLimitRR", VK_SPACE), oldPageProtection);
+		SingleProtectedWriteByte((CharColorLimitPtr + 0xB8), 1, ini.ReadInteger("Settings", "ColorLimitGhostRider", VK_SPACE), oldPageProtection);
 
-		SingleProtectedWriteByte(0x140A6FAB0, 1, ini.ReadInteger("Settings", "ColorLimitIronFist", VK_SPACE), oldPageProtection);
-		SingleProtectedWriteByte(0x140A6FAB4, 1, ini.ReadInteger("Settings", "ColorLimitDrStrange", VK_SPACE), oldPageProtection);
-		SingleProtectedWriteByte(0x140A6FAB8, 1, ini.ReadInteger("Settings", "ColorLimitHawkeye", VK_SPACE), oldPageProtection);
+		SingleProtectedWriteByte((CharColorLimitPtr + 0xBC), 1, ini.ReadInteger("Settings", "ColorLimitIronFist", VK_SPACE), oldPageProtection);
+		SingleProtectedWriteByte((CharColorLimitPtr + 0xC0), 1, ini.ReadInteger("Settings", "ColorLimitDrStrange", VK_SPACE), oldPageProtection);
+		SingleProtectedWriteByte((CharColorLimitPtr + 0xC4), 1, ini.ReadInteger("Settings", "ColorLimitHawkeye", VK_SPACE), oldPageProtection);
 
 		//These last 8 are for the child characters. They gotta be updated along with the host characters and have the same values.
-		SingleProtectedWriteByte(0x140A6FAC0, 1, ini.ReadInteger("Settings", "ColorLimitZero", VK_SPACE), oldPageProtection);
-		SingleProtectedWriteByte(0x140A6FAC4, 1, ini.ReadInteger("Settings", "ColorLimitMorrigan", VK_SPACE), oldPageProtection);
-		SingleProtectedWriteByte(0x140A6FAC8, 1, ini.ReadInteger("Settings", "ColorLimitFelciia", VK_SPACE), oldPageProtection);
-		SingleProtectedWriteByte(0x140A6FACC, 1, ini.ReadInteger("Settings", "ColorLimitFelciia", VK_SPACE), oldPageProtection);
+		SingleProtectedWriteByte((CharColorLimitPtr + 0xCC), 1, ini.ReadInteger("Settings", "ColorLimitZero", VK_SPACE), oldPageProtection);
+		SingleProtectedWriteByte((CharColorLimitPtr + 0xD0), 1, ini.ReadInteger("Settings", "ColorLimitMorrigan", VK_SPACE), oldPageProtection);
+		SingleProtectedWriteByte((CharColorLimitPtr + 0xD4), 1, ini.ReadInteger("Settings", "ColorLimitFelciia", VK_SPACE), oldPageProtection);
+		SingleProtectedWriteByte((CharColorLimitPtr + 0xD8), 1, ini.ReadInteger("Settings", "ColorLimitFelciia", VK_SPACE), oldPageProtection);
 
-		SingleProtectedWriteByte(0x140A6FAD0, 1, ini.ReadInteger("Settings", "ColorLimitFrank", VK_SPACE), oldPageProtection);
-		SingleProtectedWriteByte(0x140A6FAD4, 1, ini.ReadInteger("Settings", "ColorLimitMrWright", VK_SPACE), oldPageProtection);
-		SingleProtectedWriteByte(0x140A6FAD8, 1, ini.ReadInteger("Settings", "ColorLimitFirebrand", VK_SPACE), oldPageProtection);
-		SingleProtectedWriteByte(0x140A6FADC, 1, ini.ReadInteger("Settings", "ColorLimitDrStrange", VK_SPACE), oldPageProtection);
+		SingleProtectedWriteByte((CharColorLimitPtr + 0xDC), 1, ini.ReadInteger("Settings", "ColorLimitFrank", VK_SPACE), oldPageProtection);
+		SingleProtectedWriteByte((CharColorLimitPtr + 0xE0), 1, ini.ReadInteger("Settings", "ColorLimitMrWright", VK_SPACE), oldPageProtection);
+		SingleProtectedWriteByte((CharColorLimitPtr + 0xE4), 1, ini.ReadInteger("Settings", "ColorLimitFirebrand", VK_SPACE), oldPageProtection);
+		SingleProtectedWriteByte((CharColorLimitPtr + 0xE8), 1, ini.ReadInteger("Settings", "ColorLimitDrStrange", VK_SPACE), oldPageProtection);
+
 
 	}
+	ForCHSValueBorder = ForColor9UIC + 0xC;
 
 	//This is for text on character select. Ensures the text range is in sync.
-	SingleProtectedWriteByte(0x1403704E8, 1, CHSValueBorder, oldPageProtection);
-	MultiProtectedWriteShort(0x140420300, 4, MSDValue, oldPageProtection);
-	MultiProtectedWriteShort(0x1404219FF, 4, MSDValue, oldPageProtection);
-	MultiProtectedWriteShort(0x140421CB2, 4, MSDValue, oldPageProtection);
-	MultiProtectedWriteShort(0x1404222E6, 4, MSDValue, oldPageProtection);
+	SingleProtectedWriteByte((ForCHSValueBorder), 1, CHSValueBorder, oldPageProtection);
+
+	ForMSDIndicesA = 0xC + FindBytePattern(moduleBase, ProjectedModuleSize, AOBForMSDIndicesA);
+	MultiProtectedWriteShort(ForMSDIndicesA, 4, MSDValue, oldPageProtection);
+
+	ForMSDIndicesB = 0x1A + FindBytePattern(moduleBase, ProjectedModuleSize, AOBForMSDIndicesB);
+	MultiProtectedWriteShort(ForMSDIndicesB, 4, MSDValue, oldPageProtection);
+
+	ForMSDIndicesC = 0x19 + FindBytePattern(moduleBase, ProjectedModuleSize, AOBForMSDIndicesC);
+	MultiProtectedWriteShort(ForMSDIndicesC, 4, MSDValue, oldPageProtection);
+	
+	ForMSDIndicesD = 0x1A + FindBytePattern(moduleBase, ProjectedModuleSize, AOBForMSDIndicesD);
+	MultiProtectedWriteShort(ForMSDIndicesD, 4, MSDValue, oldPageProtection);
+
 
 	//For Testing Purposes.
 	//Licensing Board Portraits?
-	SingleProtectedWriteByte(0x140C510FF, 1, 0x0, oldPageProtection);
-
-	//This is for the rest of the Color Expansion Code to defeat checks for color borders.
-	BYTE ForSomeFunction[] = { 0x83, 0xC8 };
-
-	//I think this ensures the text doesn't go to H or DL in text scroll.
-	BYTE ForSomeFunctionC[] = { 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, };
-
-	//This I believe is for Color 9. UPDATED with function rewrite to basically preserve the conditions that picking a color out
-	//of the character's chosen color range but also eliminate the part that prevents selecting color 9.
-	BYTE ForSomeFunctionD[] = { 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90 };
-
-	MultiProtectedWriteByteArray(0x1402BC1AD, 2, ForSomeFunction, oldPageProtection);
-	MultiProtectedWriteByteArray(0x140421CB6, 14, ForSomeFunctionC, oldPageProtection);
-
+	//SingleProtectedWriteByte(0x140C510FF, 1, 0x0, oldPageProtection);
 
 	//This makes the jnz into an unconditional jump.
 	SingleProtectedWriteByte(0x1402BCA88, 1, 0xEB, oldPageProtection);
@@ -3671,6 +3764,10 @@ void OnInitializeHook()
 #pragma endregion
 
 	//Sets up Trampoline Hook for the Scroller.
+	
+	BYTE ForSomeFunctionD[] = { 0x90, 0x90, 0x90, 0x90};
+
+	
 	SingleProtectedWriteByte(0x1403704EA, 1, 0x90, oldPageProtection);
 	SingleProtectedWriteByte(0x1403704EB, 1, 0x90, oldPageProtection);
 	SingleProtectedWriteByte(0x1403704EC, 1, 0x90, oldPageProtection);
@@ -3683,11 +3780,6 @@ void OnInitializeHook()
 	
 	Fun_1402B9AE2 = moduleBase + 0x2B9AE2;
 	TCCForComparison = ToggleColorCount;
-	BYTE NoppingTheRest[] =
-	{ 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90,
-	  0x90, 0x90, 0x90, 0x90, 0x90
-	};
-	MultiProtectedWriteByteArray(0x1402B9AD5, 21, NoppingTheRest, oldPageProtection);
 
 	InjectHook(_addr(0x1402B9AD0), tramp->Jump(FUN_1402B9AD0), PATCH_JUMP);
 

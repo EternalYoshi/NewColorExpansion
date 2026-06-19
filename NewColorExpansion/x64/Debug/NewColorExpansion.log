@@ -1,4 +1,26 @@
-﻿C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Microsoft\VC\v170\Microsoft.CppBuild.targets(517,5): warning MSB8004: Output Directory does not end with a trailing slash.  This build instance will add the slash as it is required to allow proper evaluation of the Output Directory.
+﻿  In file included from dllmain.cpp:12:
+.\MemoryMgr.h(59,47): warning : 'make_checked_array_iterator<unsigned char *>' is deprecated: warning STL4043: stdext::checked_array_iterator, stdext::unchecked_array_iterator, and related factory functions are non-Standard extensions and will be removed in the future. std::span (since C++20) and gsl::span can be used instead. You can define _SILENCE_STDEXT_ARR_ITERS_DEPRECATION_WARNING or _SILENCE_ALL_MS_EXT_DEPRECATION_WARNINGS to suppress this warning. [-Wdeprecated-declarations]
+C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.42.34433\include\iterator(1700,1): message : 'make_checked_array_iterator<unsigned char *>' has been explicitly marked deprecated here
+C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.42.34433\include\yvals_core.h(1445,7): message : expanded from macro '_DEPRECATE_STDEXT_ARR_ITERS'
+  In file included from dllmain.cpp:12:
+.\MemoryMgr.h(124,53): warning : 'make_checked_array_iterator<const unsigned char *>' is deprecated: warning STL4043: stdext::checked_array_iterator, stdext::unchecked_array_iterator, and related factory functions are non-Standard extensions and will be removed in the future. std::span (since C++20) and gsl::span can be used instead. You can define _SILENCE_STDEXT_ARR_ITERS_DEPRECATION_WARNING or _SILENCE_ALL_MS_EXT_DEPRECATION_WARNINGS to suppress this warning. [-Wdeprecated-declarations]
+C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.42.34433\include\iterator(1700,1): message : 'make_checked_array_iterator<const unsigned char *>' has been explicitly marked deprecated here
+C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.42.34433\include\yvals_core.h(1445,7): message : expanded from macro '_DEPRECATE_STDEXT_ARR_ITERS'
+dllmain.cpp(15,10): warning : non-portable path to file '"iniReader.h"'; specified path differs in case from file name on disk [-Wnonportable-include-path]
+dllmain.cpp(2209,8): warning : variable 'errorMessageID' set but not used [-Wunused-but-set-variable]
+dllmain.cpp(2230,8): warning : unused variable 'errorMessageID' [-Wunused-variable]
+dllmain.cpp(2231,8): warning : unused variable 'messageBuffer' [-Wunused-variable]
+dllmain.cpp(2238,6): warning : unused variable 'TempLength' [-Wunused-variable]
+dllmain.cpp(2350,15): warning : unused variable 'patSave' [-Wunused-variable]
+dllmain.cpp(3509,8): warning : unused variable 'SecondaryColorCount' [-Wunused-variable]
+dllmain.cpp(3510,8): warning : unused variable 'TertiaryColorCount' [-Wunused-variable]
+dllmain.cpp(3768,7): warning : unused variable 'ForSomeFunctionD' [-Wunused-variable]
+dllmain.cpp(3848,9): warning : unused variable 'uChrColorType_vftable' [-Wunused-variable]
+dllmain.cpp(3849,9): warning : unused variable 'PtrToFunction' [-Wunused-variable]
+dllmain.cpp(3850,9): warning : unused variable 'PtrToThingAbovevftable' [-Wunused-variable]
+dllmain.cpp(3852,8): warning : unused variable 'oldProtect' [-Wunused-variable]
+dllmain.cpp(3853,8): warning : unused variable 'oldProtect2' [-Wunused-variable]
+dllmain.cpp(3854,8): warning : unused variable 'oldProtect3' [-Wunused-variable]
   NewColorExpansion.vcxproj -> E:\ULTIMATE MARVEL VS. CAPCOM 3\Scripts\NewColorExpansion.dll
   Renames the .dll that comes out to be a .asi.
   C:\Users\Eternal Yoshi\source\repos\NewColorExpansion\NewColorExpansion\ColorExpansion.ini
