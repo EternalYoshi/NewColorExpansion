@@ -99,6 +99,26 @@ uint64_t ForMSDIndicesB = 0;
 uint64_t ForMSDIndicesC = 0;
 uint64_t ForMSDIndicesD = 0;
 uint64_t ColorBorderDefeat = 0;
+uint64_t ForUnconditionalJumpA = 0;
+uint64_t ToReturnOne = 0;
+uint64_t AttractModeCall = 0;
+uint64_t ForSomeFunctionEPtr = 0;
+uint64_t ForSomeFunctionFPtr = 0;
+uint64_t ForSomeFunctionGPtr = 0;
+uint64_t ForNewMSDPathA = 0;
+uint64_t ForNewMSDPathB = 0;
+uint64_t ForNewMSDPathC = 0;
+uint64_t ForCHSRandomPtr = 0;
+uint64_t ForArcadeRandomPtr = 0;
+uint64_t ForTheScrollerPtr = 0;
+uint64_t ForColorOneHundredPtr = 0;
+uint64_t ForTheScrollerPart2HookPtr = 0;
+uint64_t ForTheScrollerPart2APtr = 0;
+uint64_t Rand = 0;
+uint64_t ForRandomColorIDGenerator = 0;//140360F68 is where the hook would go.
+uint64_t ForRandHook = 0;
+uint64_t GetCharacterColorCount = 0;
+uint64_t ForColorScrollerJumpBack = 0;
 //uint64_t ForMSDIndicesE = 0;
 
 size_t ProjectedModuleSize = 0xEBB000;
@@ -115,8 +135,24 @@ const char* AOBForMSDIndicesA = "8B 43 ?? 48 8B 4F ?? 83 F8 06 8D 90 E1 00 00 00
 const char* AOBForMSDIndicesB = "C7 87 ?? ?? ?? ?? 00 00 00 00 8B 87 ?? ?? ?? ?? B9 ?? ?? ?? ?? 83 F8 06 8D 90 E1 00 00 00 0F 44 D1 B9 ?? ?? ?? ??";
 const char* AOBForMSDIndicesC = "48 8B 03 FF 90 ?? ?? ?? ?? 8B 83 ?? ?? ?? ?? B9 ?? ?? 00 00 83 F8 06 8D 90 E1 00 00 00 0F 44 D1 B9 ?? ?? 00 00 83 F8 07 0F 44 D1";
 const char* AOBForMSDIndicesD = "48 8B 9C 24 ?? ?? ?? ?? 49 8D 0C 3C 41 8B 04 8F B9 ?? ?? ?? ?? 83 F8 06 8D 90 E1 00 00 00 0F 44 D1 83 F8 07 B8 ?? ?? ?? ?? 48 8D 0C 1F 0F 44 D0 49 8B 4C CE ??";
-const char* AOBForUnconditionalJump = "";
-
+const char* AOBForUnconditionalJumpA = "8D 43 FA A9 FD FF FF FF 74 ?? 83 EB 06 74 ?? FF CB 74 ?? FF CB 75 ?? 32 C0 48 8B 5C 24 30 48 83 C4 20 5F C3";
+const char* AOBToReturnOne = "E8 ?? ?? ?? ?? 48 8B C8 E8 ?? ?? ?? ?? 8D 97 ?? ?? ?? ?? 48 8B C8 E8 ?? ?? ?? ?? 84 C0 EB ?? E8 ?? ?? ?? ?? 48 8B C8 E8 ?? ?? ?? ?? 8D 57 ?? 48 8B C8 E8 ?? ?? ?? ?? 84 C0 74 ?? B0 01 48 8B 5C 24 30 48 83 C4 20 5F C3";
+const char* AOBAttractModeCall = "83 CA FF 48 8B C8 E8 ?? ?? ?? ?? BA 02 00 00 00 48 8B CD E8 ?? ?? ?? ?? 48 8B CD E8 ?? ?? ?? ?? 48 8D 5D 38 BE 06 00 00 00 83 CA FF 48 8B CB E8 ?? ?? ?? ?? BA 01 00 00 00 48 8B CB";
+const char* AOBForSomeFunctionE = "4C 8B DC 41 55 41 56 41 57 48 83 EC 50 8D 42 FF 45 0F B6 E9 45 8B F0 44 8B FA 83 F8 32 0F 87 ?? ?? ?? ?? 49 89 6B 10 49 89 73 18 49 89 7B E0 4D 89 63 D8 45 33 E4 49 C7 43 B8 FF FF FF FF 49 C7 43 C0 FF FF FF FF 49 C7 43 C8 FF FF FF FF 49 C7 43 D0 FF FF FF FF 41 8B EC 41 8B FC 49 8D 73 B8";
+const char* AOBForSomeFunctionF = "41 FF C0 E8 ?? ?? ?? ?? 48 8D 4C 24 50 E8 ?? ?? ?? ?? 48 8B 4E ?? 48 8B D0 E8 ?? ?? ?? ?? 48 8B D8 48 85 C0 74 ?? B8 67 66 66 66 C7 45 F8 E0 00 00 00 C7 45 FC E1 00 00 00 C7 45 00 E2 00 00 00 C7 45 04 E3 00 00 00";
+//const char* AOBForSomeFunctionG = "48 8B 03 FF 90 ?? ?? ?? ?? 8B 83 ?? ?? ?? ?? B9 ?? ?? ?? ?? 83 F8 06 8D 90 E1 00 00 00 0F 44 D1 B9 ?? ?? ?? ??";
+const char* AOBForSomeFunctionG = "33 D2 48 8B CB 89 83 ?? ?? ?? ?? 48 8B 03 FF 90 ?? ?? ?? ?? 8B 83 ?? ?? ?? ?? B9 ?? ?? ?? ?? 83 F8 06 8D 90 ?? ?? ?? ?? 0F 44 D1 B9 ?? ?? ?? ?? 83 F8 07 0F 44 D1";
+const char* AOBNewMSDPathA = "00 00 00 00 00 00 75 69 5C 66 6F 6E 74 5C 6D 73 67 5C 6D 73 67 5F 73 79 73 5F 6D 65 6E 75";
+const char* AOBNewMSDPathB = "75 69 5C 66 6F 6E 74 5C 6D 73 67 5C 6D 73 67 5F 73 79 73 5F 6D 65 6E 75 5F 6A 61 00 00 00 00 00";
+const char* AOBNewMSDPathC = "75 69 5C 66 6F 6E 74 5C 6D 73 67 5C 6D 73 67 5F 73 79 73 5F 6D 65 6E 75 5F 70 74";
+const char* AOBForArcadeRandom = "48 89 5C 24 08 48 89 6C 24 10 48 89 74 24 18 57 41 54 41 55 41 56 41 57 48 83 EC 40 48 8B F1 E8 ?? ?? ?? ?? C7 46 38 00 00 00 00 41 BF ?? ?? ?? ?? 48 8D 5E 3C 4C 8D A6 ?? ?? ?? ?? 41 BD 07 00 00 00 48 8B CE E8 ?? ?? ?? ?? 33 ED 41 89 04 24 44 8D 75 03 48 8B CE E8 ?? ?? ?? ?? 89 03 83 F8 33 74 ?? E8 ?? ?? ?? ?? 48 8B C8 E8 ?? ?? ?? ?? 8B F8 B8 AB AA AA AA F7 E7 C1 EA 02 8D 0C 52 03 C9 2B F9 E8 ?? ?? ?? ?? 49 8D 0C 2F 89 3C 88 8B 13 48 8B CE E8 ?? ?? ?? ?? 48 FF C5 48 83 C3 04 49 FF CE 75 ?? 49 83 C4 04 49 83 C7 03 49 FF CD 75 ?? C7 44 24 20 03 00 00 00 C7 44 24 24 23 00 00 00 C7 44 24 28 05 00 00 00 C7 44 24 2C 27 00 00 00 C7 44 24 30 23 00 00 00 C7 44 24 34 05 00 00 00 C7 44 24 38 27 00 00 00 C7 44 24 3C 03 00 00 00 E8 ?? ?? ?? ?? 48 8B C8 E8 ?? ?? ?? ?? 83 F8 03 76 ?? E8 ?? ?? ?? ?? 48 8B C8 E8 ?? ?? ?? ?? 83 E0 03 48 98 C7 86 ?? ?? ?? ?? ?? ?? ?? ?? 48 8D 0C C5 ?? ?? ?? ?? 8B 44 0C 20 89 86 ?? ?? ?? ?? 8B 44 0C 24 89 86 ?? ?? ?? ?? E8 ?? ?? ?? ?? C7 80 ?? ?? ?? ?? 00 00 00 00 E8 ?? ?? ?? ?? C7 80 ?? ?? ?? ?? 06 00 00 00 E8 ?? ?? ?? ?? C7 80 ?? ?? ?? ?? 06 00 00 00 E8 ?? ?? ?? ?? BA ?? ?? ?? ?? 48 8B C8 E8 ?? ?? ?? ?? 89 86 ?? ?? ?? ?? 48 63 5E ?? E8 ?? ?? ?? ?? 8B 94 9E ?? ?? ?? ?? 48 8B C8 E8 ?? ?? ?? ?? E8 ?? ?? ?? ?? 48 85 C0 74 ?? 48 63 4E ?? 8B 94 8E ?? ?? ?? ?? 48 8B C8 E8 ?? ?? ?? ?? 48 8B 5C 24 70 48 8B 6C 24 78 48 8B B4 24 80 00 00 00 48 83 C4 40 41 5F 41 5E 41 5D 41 5C 5F C3";
+const char* AOBForGetCharacterColorCount = "48 63 C1 48 8D 0D ?? ?? ?? ?? 8B 04 81 C3 CC";
+const char* AOBForTheScrollerPtr = "43 C0 FF FF FF FF 49 C7 43 C8 FF FF FF FF 49 C7 43 D0 FF FF FF FF 41 8B EC 41 8B FC 49 8D 73 B8";
+const char* AOBForColorOneHundredPtr = "";
+const char* AOBForTheScrollerPart2HookPtr = "";
+const char* AOBForTheScrollerPart2APtr = "";
+const char* AOBRand = "48 83 EC 28 E8 ?? ?? ?? ?? 8B 48 1C 69 C9 FD 43 03 00 81 C1 C3 9E 26 00 89 48 1C C1 E9 10 81 E1 FF 7F 00 00 8B C1 48 83 C4 28 C3 CC";
+const char* AOBForRandHook = "40 53 48 83 EC 20 41 8B D8 E8 ?? ?? ?? ?? 8B D3 48 8B C8 48 83 C4 20 5B E9 ?? ?? ?? ??";
 
 #pragma endregion
 
@@ -2268,12 +2304,12 @@ DWORD MultiProtectedWriteByteArray(DWORD64 AddressToWrite, int length, BYTE Byte
 //Originally based on HeathHowren's PatterScanning function. Adjusted to better suit the target game, which is x64.
 
 static inline uint8_t ReadHexNibble(char c) {
-	if (c >= '0' && c <= '9') 
+	if (c >= '0' && c <= '9')
 	{
 		return c - '0';
 	}
 	c &= ~0x20;
-	if (c >= 'A' && c <= 'F') 
+	if (c >= 'A' && c <= 'F')
 	{
 		return c - 'A' + 0xA;
 	}
@@ -2281,11 +2317,11 @@ static inline uint8_t ReadHexNibble(char c) {
 }
 
 static inline bool ParseNextCharacter(const char*& pat, uint8_t& outByte) {
-	
+
 	//Skip leading spaces.
 	while (*pat == ' ') ++pat;
 
-	if (!*pat) 
+	if (!*pat)
 	{
 		//The pattern's end.
 		return false;
@@ -2293,7 +2329,7 @@ static inline bool ParseNextCharacter(const char*& pat, uint8_t& outByte) {
 
 	bool wild = (pat[0] == '?');
 
-	if (!wild) 
+	if (!wild)
 	{
 		outByte = (ReadHexNibble(pat[0]) << 4) | ReadHexNibble(pat[1]);
 	}
@@ -2316,7 +2352,7 @@ static inline bool ParseNextCharacter(const char*& pat, uint8_t& outByte) {
 		pat += 2;
 	}
 
-	while (*pat == ' ') 
+	while (*pat == ' ')
 	{
 		//Skip whatever trailing spaces remain.
 		++pat;
@@ -2324,7 +2360,7 @@ static inline bool ParseNextCharacter(const char*& pat, uint8_t& outByte) {
 	return wild;
 }
 
-uint64_t FindBytePattern(uint64_t baseAddr, size_t ScanSize, const char* DataPattern) 
+uint64_t FindBytePattern(uint64_t baseAddr, size_t ScanSize, const char* DataPattern)
 {
 	//Some checking of validity.
 	if (baseAddr <= 0 || ScanSize <= 0 || !DataPattern)
@@ -2351,11 +2387,11 @@ uint64_t FindBytePattern(uint64_t baseAddr, size_t ScanSize, const char* DataPat
 		bool wild = ParseNextCharacter(CPattern, patByte);
 		uint8_t curByte = *reinterpret_cast<uint8_t*>(pCur);
 
-		if (wild || curByte == patByte) 
+		if (wild || curByte == patByte)
 		{
 			if (!FirstMatchLocation) FirstMatchLocation = pCur;
 			{
-				if (!*CPattern) 
+				if (!*CPattern)
 				{
 					break;
 				}
@@ -2369,9 +2405,9 @@ uint64_t FindBytePattern(uint64_t baseAddr, size_t ScanSize, const char* DataPat
 	}
 
 
-	if (!FirstMatchLocation) 
-	{ 
-		return 0; 
+	if (!FirstMatchLocation)
+	{
+		return 0;
 	}
 
 	return FirstMatchLocation;
@@ -2390,6 +2426,54 @@ __attribute__((naked)) void ForTheCSSColorCounter_Hook()
 		lea edx, [r8]
 		call qword ptr[ScrollerUpdater]
 		jmp qword ptr[ForTheCSSColorCounter_JmpBack]
+	}
+}
+
+//Made this an actual function, allowing for a cleaner implementation of including expansion colors. Needs testing.
+__attribute__((naked)) int ForCHSRandom()
+{
+	__asm
+	{
+		call qword ptr[Rand]
+		xor edx, edx
+		mov ecx, RandomColorLimit
+		div ecx
+		mov eax, edx
+		ret
+	}
+
+}
+
+void __fastcall ForArcadeModeRandom(uint64_t a1)
+{
+
+
+
+
+}
+
+__attribute__((naked)) uint64_t GetCharColorCount(int ai)
+{
+	__asm
+	{
+		movsxd rax, ecx
+		lea rcx, qword ptr [CharacterColorLimitArray]
+		mov eax, [rcx + rax * 0x4]
+		ret
+	}
+}
+
+__attribute__((naked)) void ForTheCHSScroller()
+{
+	__asm
+	{
+		push rcx
+		mov ecx, r14d
+		call qword ptr [GetCharColorCount]
+		dec eax
+		mov r9d, eax
+		pop rcx
+		jmp qword ptr[ForColorScrollerJumpBack]
 	}
 }
 
@@ -3356,7 +3440,7 @@ __attribute__((naked)) void ForAttractMode()
 {
 	__asm
 	{
-	
+
 		//Function that determines random colors.
 
 		mov[rsp + 0x08], rbx
@@ -3397,7 +3481,7 @@ __attribute__((naked)) void ForAttractMode()
 			//add eax, eax
 			//sub ecx, eax
 			//mov edx, ecx
-			
+
 			mov ecx, eax
 			mov eax, ecx
 			xor edx, edx
@@ -3647,21 +3731,22 @@ void OnInitializeHook()
 
 	ForMSDIndicesC = 0x19 + FindBytePattern(moduleBase, ProjectedModuleSize, AOBForMSDIndicesC);
 	MultiProtectedWriteShort(ForMSDIndicesC, 4, MSDValue, oldPageProtection);
-	
+
 	ForMSDIndicesD = 0x1A + FindBytePattern(moduleBase, ProjectedModuleSize, AOBForMSDIndicesD);
 	MultiProtectedWriteShort(ForMSDIndicesD, 4, MSDValue, oldPageProtection);
-
 
 	//For Testing Purposes.
 	//Licensing Board Portraits?
 	//SingleProtectedWriteByte(0x140C510FF, 1, 0x0, oldPageProtection);
 
 	//This makes the jnz into an unconditional jump.
-	SingleProtectedWriteByte(0x1402BCA88, 1, 0xEB, oldPageProtection);
+	ForUnconditionalJumpA = 0x15 + FindBytePattern(moduleBase, ProjectedModuleSize, AOBForUnconditionalJumpA);
+	SingleProtectedWriteByte(ForUnconditionalJumpA, 1, 0xEB, oldPageProtection);
 
 	//This rewrites the final part to return 1.
 	BYTE ForColor9[] = { 0xEB,0x1A,0x90,0x90,0x90 };
-	MultiProtectedWriteByteArray(0x1402BCAB6, 5, ForColor9, oldPageProtection);
+	ToReturnOne = 0x1F + FindBytePattern(moduleBase, ProjectedModuleSize, AOBToReturnOne);
+	MultiProtectedWriteByteArray(ToReturnOne, 5, ForColor9, oldPageProtection);
 
 	//Originallly written by Eddie to ignore all test function and simply return the result of CalculateNewColorID. Modified.
 	BYTE ForSomeFunctionE[] =
@@ -3669,7 +3754,9 @@ void OnInitializeHook()
 		0xBA, 0x01, 0x00, 0x00, 0x00, 0x45, 0x84, 0xC9, 0x0F, 0x45, 0xD0, 0x44, 0x89, 0xC1, 0x45, 0x31,
 		0xC0, 0xEB, 0x1D, 0x90, 0x00, 0x00, 0x90, 0xE8, 0xE4, 0x94, 0x19, 0x00, 0xE9, 0xE2, 0x00, 0x00,
 		0x00, 0xCC, 0xCC, 0xCC ,0xCC ,0xCC, 0xCC, 0xCC, 0xCC, 0xCC, 0xCC, 0xCC, 0xCC, 0xCC, 0xCC, 0xCC };
-	MultiProtectedWriteByteArray(0x1402BC1AD, 51, ForSomeFunctionE, oldPageProtection);
+
+	ForSomeFunctionEPtr = 0xD + FindBytePattern(moduleBase, ProjectedModuleSize, AOBForSomeFunctionE);
+	MultiProtectedWriteByteArray(ForSomeFunctionEPtr, 51, ForSomeFunctionE, oldPageProtection);//0x1402BC1AD
 
 	//Also written by Eddie for the sake of the numerical text. I believe this is actually the array of colors.
 	BYTE ForSomeFunctionF[] =
@@ -3680,42 +3767,47 @@ void OnInitializeHook()
 	  0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90,
 	  0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90,
 	  0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90 };
-	MultiProtectedWriteByteArray(0x1403705E0, 107, ForSomeFunctionF, oldPageProtection);
+
+	ForSomeFunctionFPtr = 0x26 + FindBytePattern(moduleBase, ProjectedModuleSize, AOBForSomeFunctionF);
+	MultiProtectedWriteByteArray(ForSomeFunctionFPtr, 107, ForSomeFunctionF, oldPageProtection);//0x1403705E0
 
 	//This for the license board's numerical text.
 	BYTE ForSomeFunctionG[] = { 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90 };
-	MultiProtectedWriteByteArray(0x140421CB6, 14, ForSomeFunctionG, oldPageProtection);
+	ForSomeFunctionGPtr = 0x28 + FindBytePattern(moduleBase, ProjectedModuleSize, AOBForSomeFunctionG);
+	MultiProtectedWriteByteArray(ForSomeFunctionGPtr, 14, ForSomeFunctionG, oldPageProtection);//0x140421CB6
 
 	//This is for the new paths.
 	BYTE NewPathA[] = { 0x43, 0x6F, 0x6C, 0x6F, 0x72, 0x45, 0x78, 0x70, 0x61, 0x6E, 0x64 };
 
 	//The main path with wild card for language choice msg_sys_menu_**.msd.
-	MultiProtectedWriteByteArray(0x140B162E0, 11, NewPathA, oldPageProtection);
+	ForNewMSDPathA = 0x6 + FindBytePattern(moduleBase, ProjectedModuleSize, AOBNewMSDPathA);
+	MultiProtectedWriteByteArray(ForNewMSDPathA, 11, NewPathA, oldPageProtection);//0x140B162E0
 
 	//Most of the language paths for msg_sys_menu_**.msd.
-	MultiProtectedWriteByteArray(0x140B145B8, 11, NewPathA, oldPageProtection);
-	MultiProtectedWriteByteArray(0x140B145D8, 11, NewPathA, oldPageProtection);
-	MultiProtectedWriteByteArray(0x140B145F8, 11, NewPathA, oldPageProtection);
-	MultiProtectedWriteByteArray(0x140B14618, 11, NewPathA, oldPageProtection);
-	MultiProtectedWriteByteArray(0x140B14638, 11, NewPathA, oldPageProtection);
-	MultiProtectedWriteByteArray(0x140B14658, 11, NewPathA, oldPageProtection);
+	ForNewMSDPathB = 0x0 + FindBytePattern(moduleBase, ProjectedModuleSize, AOBNewMSDPathB);
+	MultiProtectedWriteByteArray(ForNewMSDPathB, 11, NewPathA, oldPageProtection);//0x140B145B8
+	ForNewMSDPathB = ForNewMSDPathB + 0x20;
+	MultiProtectedWriteByteArray(ForNewMSDPathB, 11, NewPathA, oldPageProtection);//0x140B145D8
+	ForNewMSDPathB = ForNewMSDPathB + 0x20;
+	MultiProtectedWriteByteArray(ForNewMSDPathB, 11, NewPathA, oldPageProtection);//0x140B145F8	
+	ForNewMSDPathB = ForNewMSDPathB + 0x20;
+	MultiProtectedWriteByteArray(ForNewMSDPathB, 11, NewPathA, oldPageProtection);//0x140B14618
+	ForNewMSDPathB = ForNewMSDPathB + 0x20;
+	MultiProtectedWriteByteArray(ForNewMSDPathB, 11, NewPathA, oldPageProtection);//0x140B14638
+	ForNewMSDPathB = ForNewMSDPathB + 0x20;
+	MultiProtectedWriteByteArray(ForNewMSDPathB, 11, NewPathA, oldPageProtection);//0x140B14658
 
 	//Portugal language's path offset is separate from the rest. I don't know why.
-	MultiProtectedWriteByteArray(0x140B21D50, 11, NewPathA, oldPageProtection);
+	ForNewMSDPathC = 0x0 + FindBytePattern(moduleBase, ProjectedModuleSize, AOBNewMSDPathC);
+	MultiProtectedWriteByteArray(ForNewMSDPathC, 11, NewPathA, oldPageProtection);//0x140B21D50
 
-	//For Random & Random All. Rewrites the function so it selects the range of colors from default to color 19(20 externally).
-	BYTE ForCHSRandom[] =
-	{
-		0xE8, 0x87, 0x9B, 0x6E, 0x00, 0x31, 0xD2, 0xB9, 0x14, 0x00, 0x00, 0x00, 0xF7, 0xF1, 0x8B, 0xC2,
-		0xC3, 0x90, 0x90, 0x90, 0x90
-	};
+	//Need to get the pointer to the game's Random function before going further.
+	Trampoline* tramp = Trampoline::MakeTrampoline(GetModuleHandle(nullptr));
+	Rand = FindBytePattern(moduleBase, ProjectedModuleSize, AOBRand);
+	ForRandHook = FindBytePattern(moduleBase, ProjectedModuleSize, AOBForRandHook);
+	InjectHook(_addr(ForRandHook), tramp->Jump(ForCHSRandom), PATCH_JUMP);
 
-	MultiProtectedWriteByteArray(0x1402BC410, 21, ForCHSRandom, oldPageProtection);
-
-	//Sets it based on the Color Limit chosen by the user.
-	SingleProtectedWriteByte(0x1402BC418, 1, RandomColorLimit, oldPageProtection);
-
-
+	//todo: Just replicate this in a function I made instead of searching for such a huge amount of bytes.
 	//An adjustment on Arcade Mode's Random generator for colors. Sets the modulo to 20 and moves the rest of the code one byte after.	
 	BYTE ForArcadeRandomRewrite[] =
 	{
@@ -3745,14 +3837,23 @@ void OnInitializeHook()
 		0x5E, 0x41, 0x5D, 0x41, 0x5C, 0x5F, 0xC3, 0xCC
 
 	};
+	ForArcadeRandomPtr = 0x60 + FindBytePattern(moduleBase, ProjectedModuleSize, AOBForArcadeRandom);
+	MultiProtectedWriteByteArray(ForArcadeRandomPtr, 376, ForArcadeRandomRewrite, oldPageProtection);//0x14024DBA0
 
-	MultiProtectedWriteByteArray(0x14024DBA0, 376, ForArcadeRandomRewrite, oldPageProtection);
+	//Gotta update the rest to be hooks.
+
+	//Need to get the sBattleSetting function thing first. It's labelled as sBattleSetting__getCharVariantCount in Ryn's notes.
+	GetCharacterColorCount = FindBytePattern(moduleBase, ProjectedModuleSize, AOBForGetCharacterColorCount); //0x14001E9B0	
+	ForTheScrollerPtr = FindBytePattern(moduleBase, ProjectedModuleSize, AOBForTheScrollerPtr); //0x1402BC1C3
+	ForColorScrollerJumpBack = ForTheScrollerPtr - 0x19; //0x1402BC1C7
+
+	//To Be Continued....
 
 	//Thanks to Gneiss for his gift that showed me what to change and how.
 	BYTE ForTheScroller[] =
 	{ 0x51, 0x41, 0x8B, 0xCE, 0xE8, 0xC7, 0x27, 0xD6, 0xFF, 0xFF, 0xC8, 0x44, 0x8B, 0xC8, 0x59, 0xEB,
 	  0xD6, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0xC3, 0xCC, 0xCC, 0xCC };
-	MultiProtectedWriteByteArray(0x1402BC1E0, 32, ForTheScroller, oldPageProtection);
+	MultiProtectedWriteByteArray(ForTheScrollerPtr, 32, ForTheScroller, oldPageProtection);//0x1402BC1E0
 
 	//Reroute the Silhouette portrait to 255 instead of 99.
 	BYTE ForColorOneHundred[] =
@@ -3764,10 +3865,6 @@ void OnInitializeHook()
 #pragma endregion
 
 	//Sets up Trampoline Hook for the Scroller.
-	
-	BYTE ForSomeFunctionD[] = { 0x90, 0x90, 0x90, 0x90};
-
-	
 	SingleProtectedWriteByte(0x1403704EA, 1, 0x90, oldPageProtection);
 	SingleProtectedWriteByte(0x1403704EB, 1, 0x90, oldPageProtection);
 	SingleProtectedWriteByte(0x1403704EC, 1, 0x90, oldPageProtection);
@@ -3775,9 +3872,9 @@ void OnInitializeHook()
 	ScrollerUpdater = moduleBase + 0x455640;
 	ForTheCSSColorCounter_JmpBack = moduleBase + 0x3704EE;
 	TCCForScroller = ToggleColorCount - 1;
-	Trampoline* tramp = Trampoline::MakeTrampoline(GetModuleHandle(nullptr));
+	//Trampoline* tramp = Trampoline::MakeTrampoline(GetModuleHandle(nullptr));
 	InjectHook(_addr(0x1403704E5), tramp->Jump(ForTheCSSColorCounter_Hook), PATCH_JUMP);
-	
+
 	Fun_1402B9AE2 = moduleBase + 0x2B9AE2;
 	TCCForComparison = ToggleColorCount;
 
@@ -3803,6 +3900,10 @@ void OnInitializeHook()
 	FUN_1400012E0 = moduleBase + 0x12E0;
 	FUN_140D2AD20 = moduleBase + 0xD2AD20;
 	FUN_14035F770 = moduleBase + 0x35F770;
+
+	//For attract mode.
+	AttractModeCall = 0x1B + FindBytePattern(moduleBase, ProjectedModuleSize, AOBAttractModeCall);
+	InjectHook(_addr(AttractModeCall), tramp->Jump(ForAttractMode), PATCH_CALL);
 
 	//InjectHook(_addr(0x14035FF7F), tramp->Jump(ForTheColorBorders), PATCH_JUMP);
 	//InjectHook(_addr(0x14035FF60), tramp->Jump(ForTheColorBorders_uChrColorTypeTypeInfo), PATCH_JUMP);
@@ -3867,8 +3968,7 @@ void OnInitializeHook()
 
 #pragma endregion
 
-	//For attract mode.
-	InjectHook(_addr(0x14024E277), tramp->Jump(ForAttractMode), PATCH_CALL);
+
 
 }
 
