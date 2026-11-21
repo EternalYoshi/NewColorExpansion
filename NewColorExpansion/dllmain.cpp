@@ -120,8 +120,11 @@ uint64_t ForRandHook = 0;
 uint64_t GetCharacterColorCount = 0;
 uint64_t ForColorScrollerJumpBack = 0;
 //uint64_t ForMSDIndicesE = 0;
-
+uint64_t SilhouettePath = 0;
 size_t ProjectedModuleSize = 0xEBB000;
+uint64_t HookForScrollerB = 0;
+uint64_t HookForScrollerC = 0;
+uint64_t HookForScrollerD = 0;
 
 #pragma region AOB strings
 //The first part of the pattern. This should definitely ONLY match the first part of this array.
@@ -138,8 +141,7 @@ const char* AOBForMSDIndicesD = "48 8B 9C 24 ?? ?? ?? ?? 49 8D 0C 3C 41 8B 04 8F
 const char* AOBForUnconditionalJumpA = "8D 43 FA A9 FD FF FF FF 74 ?? 83 EB 06 74 ?? FF CB 74 ?? FF CB 75 ?? 32 C0 48 8B 5C 24 30 48 83 C4 20 5F C3";
 const char* AOBToReturnOne = "E8 ?? ?? ?? ?? 48 8B C8 E8 ?? ?? ?? ?? 8D 97 ?? ?? ?? ?? 48 8B C8 E8 ?? ?? ?? ?? 84 C0 EB ?? E8 ?? ?? ?? ?? 48 8B C8 E8 ?? ?? ?? ?? 8D 57 ?? 48 8B C8 E8 ?? ?? ?? ?? 84 C0 74 ?? B0 01 48 8B 5C 24 30 48 83 C4 20 5F C3";
 const char* AOBAttractModeCall = "83 CA FF 48 8B C8 E8 ?? ?? ?? ?? BA 02 00 00 00 48 8B CD E8 ?? ?? ?? ?? 48 8B CD E8 ?? ?? ?? ?? 48 8D 5D 38 BE 06 00 00 00 83 CA FF 48 8B CB E8 ?? ?? ?? ?? BA 01 00 00 00 48 8B CB";
-const char* AOBForSomeFunctionE = "4C 8B DC 41 55 41 56 41 57 48 83 EC 50 8D 42 FF 45 0F B6 E9 45 8B F0 44 8B FA 83 F8 32 0F 87 ?? ?? ?? ?? 49 89 6B 10 49 89 73 18 49 89 7B E0 4D 89 63 D8 45 33 E4 49 C7 43 B8 FF FF FF FF 49 C7 43 C0 FF FF FF FF 49 C7 43 C8 FF FF FF FF 49 C7 43 D0 FF FF FF FF 41 8B EC 41 8B FC 49 8D 73 B8";
-const char* AOBForSomeFunctionF = "41 FF C0 E8 ?? ?? ?? ?? 48 8D 4C 24 50 E8 ?? ?? ?? ?? 48 8B 4E ?? 48 8B D0 E8 ?? ?? ?? ?? 48 8B D8 48 85 C0 74 ?? B8 67 66 66 66 C7 45 F8 E0 00 00 00 C7 45 FC E1 00 00 00 C7 45 00 E2 00 00 00 C7 45 04 E3 00 00 00";
+const char* AOBForSomeFunctionE = "4C 8B DC 41 55 41 56 41 57 48 83 EC 50 8D 42 FF 45 0F B6 E9 45 8B F0 44 8B FA 90 90 90 90 90 90 90 90 90 49 89 6B ?? 49 89 73 ?? 49 89 7B ?? 4D 89 63 ?? 45 33 ?? 49 C7 43 ?? FF FF FF FF 49 C7 43 ?? FF FF FF FF 49 C7 43 ?? FF FF FF FF 49 C7 43 ?? FF FF FF FF 41 8B EC 41 8B FC"; const char* AOBForSomeFunctionF = "41 FF C0 E8 ?? ?? ?? ?? 48 8D 4C 24 50 E8 ?? ?? ?? ?? 48 8B 4E ?? 48 8B D0 E8 ?? ?? ?? ?? 48 8B D8 48 85 C0 74 ?? B8 67 66 66 66 C7 45 F8 E0 00 00 00 C7 45 FC E1 00 00 00 C7 45 00 E2 00 00 00 C7 45 04 E3 00 00 00";
 //const char* AOBForSomeFunctionG = "48 8B 03 FF 90 ?? ?? ?? ?? 8B 83 ?? ?? ?? ?? B9 ?? ?? ?? ?? 83 F8 06 8D 90 E1 00 00 00 0F 44 D1 B9 ?? ?? ?? ??";
 const char* AOBForSomeFunctionG = "33 D2 48 8B CB 89 83 ?? ?? ?? ?? 48 8B 03 FF 90 ?? ?? ?? ?? 8B 83 ?? ?? ?? ?? B9 ?? ?? ?? ?? 83 F8 06 8D 90 ?? ?? ?? ?? 0F 44 D1 B9 ?? ?? ?? ?? 83 F8 07 0F 44 D1";
 const char* AOBNewMSDPathA = "00 00 00 00 00 00 75 69 5C 66 6F 6E 74 5C 6D 73 67 5C 6D 73 67 5F 73 79 73 5F 6D 65 6E 75";
@@ -148,12 +150,13 @@ const char* AOBNewMSDPathC = "75 69 5C 66 6F 6E 74 5C 6D 73 67 5C 6D 73 67 5F 73
 const char* AOBForArcadeRandom = "48 89 5C 24 08 48 89 6C 24 10 48 89 74 24 18 57 41 54 41 55 41 56 41 57 48 83 EC 40 48 8B F1 E8 ?? ?? ?? ?? C7 46 38 00 00 00 00 41 BF ?? ?? ?? ?? 48 8D 5E 3C 4C 8D A6 ?? ?? ?? ?? 41 BD 07 00 00 00 48 8B CE E8 ?? ?? ?? ?? 33 ED 41 89 04 24 44 8D 75 03 48 8B CE E8 ?? ?? ?? ?? 89 03 83 F8 33 74 ?? E8 ?? ?? ?? ?? 48 8B C8 E8 ?? ?? ?? ?? 8B F8 B8 AB AA AA AA F7 E7 C1 EA 02 8D 0C 52 03 C9 2B F9 E8 ?? ?? ?? ?? 49 8D 0C 2F 89 3C 88 8B 13 48 8B CE E8 ?? ?? ?? ?? 48 FF C5 48 83 C3 04 49 FF CE 75 ?? 49 83 C4 04 49 83 C7 03 49 FF CD 75 ?? C7 44 24 20 03 00 00 00 C7 44 24 24 23 00 00 00 C7 44 24 28 05 00 00 00 C7 44 24 2C 27 00 00 00 C7 44 24 30 23 00 00 00 C7 44 24 34 05 00 00 00 C7 44 24 38 27 00 00 00 C7 44 24 3C 03 00 00 00 E8 ?? ?? ?? ?? 48 8B C8 E8 ?? ?? ?? ?? 83 F8 03 76 ?? E8 ?? ?? ?? ?? 48 8B C8 E8 ?? ?? ?? ?? 83 E0 03 48 98 C7 86 ?? ?? ?? ?? ?? ?? ?? ?? 48 8D 0C C5 ?? ?? ?? ?? 8B 44 0C 20 89 86 ?? ?? ?? ?? 8B 44 0C 24 89 86 ?? ?? ?? ?? E8 ?? ?? ?? ?? C7 80 ?? ?? ?? ?? 00 00 00 00 E8 ?? ?? ?? ?? C7 80 ?? ?? ?? ?? 06 00 00 00 E8 ?? ?? ?? ?? C7 80 ?? ?? ?? ?? 06 00 00 00 E8 ?? ?? ?? ?? BA ?? ?? ?? ?? 48 8B C8 E8 ?? ?? ?? ?? 89 86 ?? ?? ?? ?? 48 63 5E ?? E8 ?? ?? ?? ?? 8B 94 9E ?? ?? ?? ?? 48 8B C8 E8 ?? ?? ?? ?? E8 ?? ?? ?? ?? 48 85 C0 74 ?? 48 63 4E ?? 8B 94 8E ?? ?? ?? ?? 48 8B C8 E8 ?? ?? ?? ?? 48 8B 5C 24 70 48 8B 6C 24 78 48 8B B4 24 80 00 00 00 48 83 C4 40 41 5F 41 5E 41 5D 41 5C 5F C3";
 const char* AOBForGetCharacterColorCount = "48 63 C1 48 8D 0D ?? ?? ?? ?? 8B 04 81 C3 CC";
 const char* AOBForTheScrollerPtr = "43 C0 FF FF FF FF 49 C7 43 C8 FF FF FF FF 49 C7 43 D0 FF FF FF FF 41 8B EC 41 8B FC 49 8D 73 B8";
-const char* AOBForColorOneHundredPtr = "";
-const char* AOBForTheScrollerPart2HookPtr = "";
-const char* AOBForTheScrollerPart2APtr = "";
+const char* AOBSilhouettePath = "75 69 5C 63 68 73 5C 63 68 73 5F 62 31 70 5C 63 68 73 5F 62 6F 64 79 5C 62 5F 25 73 39 39 5F 42 4D 5F 48 51 5F 4E 4F 4D 49 50";
 const char* AOBRand = "48 83 EC 28 E8 ?? ?? ?? ?? 8B 48 1C 69 C9 FD 43 03 00 81 C1 C3 9E 26 00 89 48 1C C1 E9 10 81 E1 FF 7F 00 00 8B C1 48 83 C4 28 C3 CC";
 const char* AOBForRandHook = "40 53 48 83 EC 20 41 8B D8 E8 ?? ?? ?? ?? 8B D3 48 8B C8 48 83 C4 20 5B E9 ?? ?? ?? ??";
-
+const char* AOBHookForScrollerB = "41 8D ?? ?? E8 ?? ?? ?? ?? 4C 8B A4 24 ?? ?? ?? ?? 41 8D 4E CB 44 8B F8 83 F9 01 76 ?? 45 85 F6 74 ?? B0 01 EB ?? 32 C0";
+const char* AOBHookForScrollerC = "33 D2 44 8D 42 40 48 8D 8B ?? ?? ?? ?? 48 83 C4 20 5B E9 ?? ?? ?? ?? E9 ?? ?? ?? ??";
+const char* AOBForScrollerUpdater = "03 CA 41 3B C8 41 0F 4C C8 41 3B C9 41 0F 4F C9 8B C1 C3";
+const char* AOBHookForScrollerD = "33 C0 41 83 ?? ?? 7D ?? 45 85 C0 44 0F 48 C0 41 8B C0 F3 C3";
 #pragma endregion
 
 //Gotta make arrays of strings for the characters. I think this is what the SDL uses to lookup the RGB values.
@@ -3847,7 +3850,7 @@ void OnInitializeHook()
 	ForTheScrollerPtr = FindBytePattern(moduleBase, ProjectedModuleSize, AOBForTheScrollerPtr); //0x1402BC1C3
 	ForColorScrollerJumpBack = ForTheScrollerPtr - 0x19; //0x1402BC1C7
 
-	//To Be Continued....
+	//I can return to this to improve the function later.
 
 	//Thanks to Gneiss for his gift that showed me what to change and how.
 	BYTE ForTheScroller[] =
@@ -3860,25 +3863,31 @@ void OnInitializeHook()
 	{ 0x68, 0x73, 0x5F, 0x62, 0x6F, 0x64, 0x79, 0x5C, 0x62, 0x5F, 0x25, 0x73, 0x32, 0x35, 0x35, 0x5F,
 	  0x42, 0x4D, 0x5F, 0x48, 0x51, 0x5F, 0x4E, 0x4F, 0x4D, 0x49, 0x50
 	};
-	MultiProtectedWriteByteArray(0x140B2A380, 27, ForColorOneHundred, oldPageProtection);
+	SilhouettePath = 0x10 + FindBytePattern(moduleBase, ProjectedModuleSize, AOBSilhouettePath);
+	MultiProtectedWriteByteArray(SilhouettePath, 27, ForColorOneHundred, oldPageProtection);//0x140B2A380
 
 #pragma endregion
 
-	//Sets up Trampoline Hook for the Scroller.
-	SingleProtectedWriteByte(0x1403704EA, 1, 0x90, oldPageProtection);
-	SingleProtectedWriteByte(0x1403704EB, 1, 0x90, oldPageProtection);
-	SingleProtectedWriteByte(0x1403704EC, 1, 0x90, oldPageProtection);
-	SingleProtectedWriteByte(0x1403704ED, 1, 0x90, oldPageProtection);
-	ScrollerUpdater = moduleBase + 0x455640;
-	ForTheCSSColorCounter_JmpBack = moduleBase + 0x3704EE;
+	//To Be Continued....
+
+	HookForScrollerB = FindBytePattern(moduleBase, ProjectedModuleSize, AOBHookForScrollerB);
+	uint64_t NopMe = HookForScrollerB + 5;
+
+	BYTE ForNopMes[] = { 0x90,0x90,0x90,0x90 };
+	MultiProtectedWriteByteArray(NopMe, 4, ForNopMes, oldPageProtection);
+
+	ScrollerUpdater = FindBytePattern(moduleBase, ProjectedModuleSize, AOBForScrollerUpdater);	//0x140455640
+	ForTheCSSColorCounter_JmpBack = HookForScrollerB + 0x9;	//0x1403704EE
 	TCCForScroller = ToggleColorCount - 1;
-	//Trampoline* tramp = Trampoline::MakeTrampoline(GetModuleHandle(nullptr));
-	InjectHook(_addr(0x1403704E5), tramp->Jump(ForTheCSSColorCounter_Hook), PATCH_JUMP);
+
+	InjectHook(_addr(HookForScrollerB), tramp->Jump(ForTheCSSColorCounter_Hook), PATCH_JUMP);//0x1403704E5
 
 	Fun_1402B9AE2 = moduleBase + 0x2B9AE2;
 	TCCForComparison = ToggleColorCount;
 
-	InjectHook(_addr(0x1402B9AD0), tramp->Jump(FUN_1402B9AD0), PATCH_JUMP);
+
+	HookForScrollerD = FindBytePattern(moduleBase, ProjectedModuleSize, AOBHookForScrollerD);
+	InjectHook(_addr(HookForScrollerD), tramp->Jump(FUN_1402B9AD0), PATCH_JUMP);//0x1402B9AD0
 
 	//License Board fixes.
 	BACKTOFUN_14041AA1B = moduleBase + 0x41AA1B;
